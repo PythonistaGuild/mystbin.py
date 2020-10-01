@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "mystbin.py"
+version = "0.0.1"
+description = "A small simple wrapper around the mystb.in API."
+authors = ["AbstractUmbra <Umbra@AbstractUmbra.xyz>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/AbstractUmbra/mystbin-py"
+repository = "https://github.com/AbstractUmbra/mystbin-py"
+keywords = ["mystbin",  "paste"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+include = [
+    "LICENSE"
+]
+packages = [
+    { include = "mystbin" },
+    { include = "mystbin/**/*.py" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+aiohttp = "^3.6.2"
+
+[tool.poetry.dev-dependencies]
+setuptools = "^50.3.0"
+wheel = "^0.35.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
