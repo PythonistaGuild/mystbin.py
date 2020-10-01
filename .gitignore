@@ -1,6 +1,8 @@
 .vscode/
+__ignore__/
 *.pyc
 __pycache__/
 /dist/
 /*.egg-info/
+.mypy_cache/
 setup.py
