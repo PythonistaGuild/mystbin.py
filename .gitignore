@@ -1,5 +1,6 @@
 .vscode/
 __ignore__/
+.idea/
 *.pyc
 __pycache__/
 /dist/
