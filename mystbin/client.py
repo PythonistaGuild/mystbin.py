@@ -34,10 +34,10 @@ from .constants import *
 from .errors import *
 from .objects import *
 
-__all__ = ("MystClient", )
+__all__ = ("MystbinClient", )
 
 
-class MystClient:
+class MystbinClient:
     """
     Client for interacting with the Mystb.in API.
 
@@ -159,3 +159,8 @@ class MystClient:
         async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
             paste_data = await response.json()
         return PasteData(paste_id, paste_data)
+
+    async def close(self):
+        """ Async only - close the session. """
+        if self.session and isinstance(self.session, aiohttp.ClientSession):
+            await self.session.close()

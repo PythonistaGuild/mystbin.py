@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mystbin.py"
-version = "0.2.0"
+version = "0.2.1"
 description = "A small simple wrapper around the mystb.in API."
 authors = ["AbstractUmbra <Umbra@AbstractUmbra.xyz>"]
 license = "MIT"

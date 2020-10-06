@@ -5,7 +5,7 @@ A small simple wrapper around the [Mystb.in](https://mystb.in/) API.
 ### Features
 
 [x] - `POST`ing to the API, which will return the provided url. \
-[ ] - `GET`ting from the API, provided you know the URL or paste ID. \
+[x] - `GET`ting from the API, provided you know the URL or paste ID. \
 [x] - Ability to pass in a sync or async session / parameter so it is flexible.
 
 [x] - Write a real underlying Client for this, it will be required for... \
@@ -33,7 +33,7 @@ Since the project is considered multi-sync, it will work in a sync/async environ
 # async example - it will default to async
 import mystbin
 
-mystbin_client = mystbin.MystClient() ## api_key kwarg for authentication also
+mystbin_client = mystbin.MystbinClient() ## api_key kwarg for authentication also
 
 await mystbin_client.post("Hello from Mystb.in!", suffix="python")
 >>> 'https://mystb.in/<your generated ID>.python'
@@ -45,7 +45,7 @@ import mystbin
 import requests
 
 sync_session = requests.Session()
-mystbin_client = mystbin.MystClient(session=sync_session) ## optional api_key kwarg also
+mystbin_client = mystbin.MystbinClient(session=sync_session) ## optional api_key kwarg also
 
 mystbin_client.post("Hello from sync Mystb.in!", suffix="text")
 >>> 'https://mystb.in/<your generated ID>.text'
