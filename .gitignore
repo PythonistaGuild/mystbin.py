@@ -1,9 +1,7 @@
 .vscode/
 __ignore__/
-.idea/
-*.pyc
 __pycache__/
+*.pyc
 /dist/
 /*.egg-info/
 .mypy_cache/
-setup.py

@@ -23,12 +23,12 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from re import compile
-from aiohttp import ClientTimeout
-
 
 API_BASE_URL = "https://mystb.in/api/pastes"
+PASTE_BASE = "https://mystb.in/{}{}"
 
-CLIENT_TIMEOUT = ClientTimeout(total=15.0)
+CLIENT_TIMEOUT = 15
 
-# grab the paste id: https://regex101.com/r/qkluDh/1
-MB_URL_RE = compile(r"(?:http[s]?://mystb\.in/)?([a-zA-Z]+)(?:.*)")
+# grab the paste id: https://regex101.com/r/qkluDh/6
+MB_URL_RE = compile(
+    r"(?:(?:https?://)?mystb\.in/)?(?P<ID>[a-zA-Z]+)(?:\.(?P<syntax>[a-zA-Z0-9]+))?")

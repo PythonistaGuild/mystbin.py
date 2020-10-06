@@ -22,3 +22,21 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+
+class BadPasteID(ValueError):
+    """ Bad Paste ID. """
+
+class MystbinException(Exception):
+    """ Error when interacting with Mystbin. """
+
+class APIError(MystbinException):
+    __slots__ = ("status_code", "message")
+    def __init__(self, status_code: int, message: str) -> None:
+        self.status_code = status_code
+        self.message = message
+
+    def __repr__(self) -> str:
+        return f"<MystbinError status_code={self.status_code} message={self.message}>"
+
+    def __str__(self) -> str:
+        return self.message
