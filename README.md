@@ -6,6 +6,8 @@ A small simple wrapper around the [Mystb.in](https://mystb.in/) API.
 
 - [x] - `POST`ing to the API, which will return the provided url.
 - [x] - `GET`ting from the API, provided you know the URL or paste ID.
+- [ ] - `DELETE`ing from the API, provided the paste is attached to your account.
+- [ ] - `PATCH`ing to the API, provided the paste is attached to your account.
 - [x] - Ability to pass in a sync or async session / parameter so it is flexible.
 - [x] - Write a real underlying Client for this, it will be required for...
 - [ ] - ... Authorization. Awaiting the API making this public as it is still WIP.
