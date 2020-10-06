@@ -24,10 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 import asyncio
 import json
-from typing import Awaitable, Callable, Optional, Union
+from typing import Awaitable, Callable, Optional, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    import requests
 
 import aiohttp
-import requests
 import yarl
 
 from .constants import *
@@ -126,7 +127,7 @@ class MystbinClient:
 
         return Paste(response_data, syntax)
 
-    def get(self, paste_id: str) -> str:
+    def get(self, paste_id: str) -> Union[PasteData, Awaitable]:
         """
         This will perform a GET request against the Mystb.in API and return the url.
         Must be passed a valid paste ID or URL.
