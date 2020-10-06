@@ -4,12 +4,11 @@ A small simple wrapper around the [Mystb.in](https://mystb.in/) API.
 
 ### Features
 
-[x] - `POST`ing to the API, which will return the provided url. \
-[x] - `GET`ting from the API, provided you know the URL or paste ID. \
-[x] - Ability to pass in a sync or async session / parameter so it is flexible.
-
-[x] - Write a real underlying Client for this, it will be required for... \
-[ ] - Authorization. Awaiting the API making this public as it is still WIP. \
+- [x] - `POST`ing to the API, which will return the provided url.
+- [x] - `GET`ting from the API, provided you know the URL or paste ID.
+- [x] - Ability to pass in a sync or async session / parameter so it is flexible.
+- [x] - Write a real underlying Client for this, it will be required for...
+- [ ] - ... Authorization. Awaiting the API making this public as it is still WIP.
 
 ### Installation
 This project will be on [PyPI](https://pypi.org/project/mystbin.py/) as a stable release, you can always find that there.
@@ -35,8 +34,19 @@ import mystbin
 
 mystbin_client = mystbin.MystbinClient() ## api_key kwarg for authentication also
 
-await mystbin_client.post("Hello from Mystb.in!", suffix="python")
+paste = await mystbin_client.post("Hello from Mystb.in!", syntax="python")
+str(paste)
 >>> 'https://mystb.in/<your generated ID>.python'
+
+paste.url
+>>> 'https://mystb.in/<your generated ID>.python'
+
+get_paste = await mystbin_client.get("https://mystb.in/<your generated ID>")
+str(paste)
+>>> "Hello from Mystb.in!"
+
+paste.created_at
+>>> datetime.datetime(2020, 10, 6, 10, 53, 57, 556741)
 ```
 
 ```py
@@ -47,7 +57,7 @@ import requests
 sync_session = requests.Session()
 mystbin_client = mystbin.MystbinClient(session=sync_session) ## optional api_key kwarg also
 
-mystbin_client.post("Hello from sync Mystb.in!", suffix="text")
+mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
 >>> 'https://mystb.in/<your generated ID>.text'
 ```
 

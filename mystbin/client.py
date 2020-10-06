@@ -73,11 +73,11 @@ class MystbinClient:
     async def _generate_async_session(self, session: Optional[aiohttp.ClientSession] = None) -> aiohttp.ClientSession:
         """ We will update (or create) a :class:`aiohttp.ClientSession` instance with the auth we require. """
         if not session:
-            session = aiohttp.ClientSession(raise_for_status=False,
-                                            timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT))
+            session = aiohttp.ClientSession(raise_for_status=False)
         if self.api_key:
             session._default_headers.update(
                 {"Authorization": self.api_key})
+        session._timeout = aiohttp.ClientTimeout(CLIENT_TIMEOUT)
         return session
 
     def post(self, content: str, syntax: str = None) -> Union[Paste, Awaitable]:
@@ -100,7 +100,7 @@ class MystbinClient:
         """ Sync post request. """
         payload = {'meta': [{'index': 0, 'syntax': syntax}]}
         response: requests.Response = self.session.post(API_BASE_URL, files={
-                                                        'data': content, 'meta': (None, json.dumps(payload), 'application/json')})
+                                                        'data': content, 'meta': (None, json.dumps(payload), 'application/json')}, timeout=CLIENT_TIMEOUT)
         if response.status_code not in [200, 201]:
             raise APIError(response.status_code, response.text)
 
