@@ -24,7 +24,8 @@ DEALINGS IN THE SOFTWARE.
 
 import asyncio
 import json
-from typing import Awaitable, Callable, Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Awaitable, Callable, Optional, Type, Union
+
 if TYPE_CHECKING:
     import requests
 
@@ -56,7 +57,7 @@ class MystbinClient:
         self, *,
         api_key: str = None,
         session: Optional[Union[aiohttp.ClientSession,
-                                requests.Session]] = None
+                                Type["requests.Session"]]] = None
     ) -> None:
         self.api_key = api_key
         self._are_we_async = session is None or isinstance(
@@ -64,7 +65,7 @@ class MystbinClient:
         self.session = self._generate_sync_session(
             session) if not self._are_we_async else None
 
-    def _generate_sync_session(self, session: requests.Session) -> requests.Session:
+    def _generate_sync_session(self, session: Type["requests.Session"]) -> Type["requests.Session"]:
         """ We will update a :class:`requests.Session` instance with the auth we require. """
         # the passed session was found to be 'sync'.
         if self.api_key:
@@ -100,7 +101,7 @@ class MystbinClient:
     def _perform_sync_post(self, content: str, syntax: str = None) -> Paste:
         """ Sync post request. """
         payload = {'meta': [{'index': 0, 'syntax': syntax}]}
-        response: requests.Response = self.session.post(API_BASE_URL, files={
+        response: Type["requests.Response"] = self.session.post(API_BASE_URL, files={
                                                         'data': content, 'meta': (None, json.dumps(payload), 'application/json')}, timeout=CLIENT_TIMEOUT)
         if response.status_code not in [200, 201]:
             raise APIError(response.status_code, response.text)
