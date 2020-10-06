@@ -26,11 +26,9 @@ import asyncio
 import json
 from typing import TYPE_CHECKING, Awaitable, Callable, Optional, Type, Union
 
+import aiohttp
 if TYPE_CHECKING:
     import requests
-
-import aiohttp
-import yarl
 
 from .constants import *
 from .errors import *
@@ -102,7 +100,7 @@ class MystbinClient:
         """ Sync post request. """
         payload = {'meta': [{'index': 0, 'syntax': syntax}]}
         response: Type["requests.Response"] = self.session.post(API_BASE_URL, files={
-                                                        'data': content, 'meta': (None, json.dumps(payload), 'application/json')}, timeout=CLIENT_TIMEOUT)
+            'data': content, 'meta': (None, json.dumps(payload), 'application/json')}, timeout=CLIENT_TIMEOUT)
         if response.status_code not in [200, 201]:
             raise APIError(response.status_code, response.text)
 
@@ -122,7 +120,7 @@ class MystbinClient:
         async with self.session.post(API_BASE_URL, data=multi_part_write) as response:
             status_code = response.status
             response_text = await response.text()
-            if status_code not in [200, 201]:
+            if status_code not in (200, ):
                 raise APIError(status_code, response_text)
             response_data = await response.json()
 
@@ -149,16 +147,20 @@ class MystbinClient:
 
     def _perform_sync_get(self, paste_id: str, syntax: str = None) -> PasteData:
         """ Sync get request. """
-        response = self.session.get(
+        response: requests.Response = self.session.get(
             f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT)
+        if response.status_code not in (200, ):
+            raise BadPasteID("This is an invalid Mystb.in paste ID.")
         paste_data = response.json()
         return PasteData(paste_id, paste_data)
 
     async def _perform_async_get(self, paste_id: str, syntax: str = None) -> PasteData:
         """ Async get request. """
         if not self.session:
-            self.session = await self._generate_async_session()
+            self.session: aiohttp.ClientSession = await self._generate_async_session()
         async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
+            if response.status not in (200, ):
+                raise BadPasteID("This is an invalid Mystb.in paste ID.")
             paste_data = await response.json()
         return PasteData(paste_id, paste_data)
 

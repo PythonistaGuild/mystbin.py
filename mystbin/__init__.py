@@ -22,5 +22,11 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+from collections import namedtuple
+
 from .client import MystbinClient
 from .errors import *
+
+__version__ = "0.2.5"
+VersionInfo = namedtuple("VersionInfo", "major minor micro releaselevel serial")
+version_info = VersionInfo(major=0, minor=2, micro=5, releaselevel='final', serial=0)
