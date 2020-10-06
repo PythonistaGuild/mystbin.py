@@ -22,5 +22,5 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from .client import MystClient
+from .client import MystbinClient
 from .errors import *
