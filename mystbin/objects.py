@@ -83,3 +83,4 @@ class PasteData:
     def content(self) -> str:
         """ Return the paste content but dedented correctly. """
         return dedent(self.paste_content)
+    
