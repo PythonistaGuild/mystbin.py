@@ -46,6 +46,9 @@ class Paste:
     def url(self) -> str:
         syntax = f".{self.syntax}" if self.syntax else ""
         return PASTE_BASE.format(self.paste_id, syntax)
+    
+    def with_syntax(self, new_syntax: str) -> str:
+        return PASTE_BASE.format(self.paste_id, new_syntax)
 
 class PasteData:
     __slots__ = ("paste_id", "_paste_data", "paste_content", "paste_syntax", "paste_nick", "paste_date")
@@ -80,3 +83,4 @@ class PasteData:
     def content(self) -> str:
         """ Return the paste content but dedented correctly. """
         return dedent(self.paste_content)
+    
