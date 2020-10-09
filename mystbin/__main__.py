@@ -61,9 +61,9 @@ def show_version():
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        prog='discord', description='Tools for helping with discord.py')
+        prog='mystbin', description='Tools for helping with mystbin.py')
     parser.add_argument('-v', '--version', action='store_true',
-                        help='shows the library version')
+                        help='shows the wrapper version')
     parser.set_defaults(func=core)
 
     return parser, parser.parse_args()
