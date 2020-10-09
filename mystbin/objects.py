@@ -69,6 +69,7 @@ class Paste:
         new_syntax: :class:`str`
             The new suffix to append to the Paste.
         """
+        new_syntax = f".{new_syntax}" if new_syntax else None
         return PASTE_BASE.format(self.paste_id, new_syntax)
 
 class PasteData:
