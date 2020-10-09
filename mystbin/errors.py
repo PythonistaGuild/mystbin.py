@@ -30,8 +30,20 @@ class MystbinException(Exception):
     """ Error when interacting with Mystbin. """
 
 class APIError(MystbinException):
+    """
+    Exception relationg to the API of Mystbin.
+
+    Attributes
+    ----------
+    status_code: :class:`int`
+        The HTTP Status code return from the API.
+    message: :class:`str`
+        The Message supplied with the HTTP status code from the API.
+    """
+
     __slots__ = ("status_code", "message")
-    def __init__(self, status_code: int, message: str) -> None:
+
+    def __init__(self, status_code: int, message: str):
         self.status_code = status_code
         self.message = message
 
