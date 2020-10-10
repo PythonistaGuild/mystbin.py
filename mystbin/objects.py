@@ -27,11 +27,12 @@ from textwrap import dedent
 
 from .constants import PASTE_BASE
 
+
 class Paste:
     """
     A class representing the return data from the API after performing a POST request.
 
-    Parameters
+    Attributes
     ----------
     paste_id: :class:`str`
         The ID returned from the API. Genertally it is 3 random choice English words.
@@ -72,11 +73,12 @@ class Paste:
         new_syntax = f".{new_syntax}" if new_syntax else None
         return PASTE_BASE.format(self.paste_id, new_syntax)
 
+
 class PasteData:
     """
     A class representing the return data from the API after performing a GET request.
 
-    Parameters
+    Attributes
     ----------
     paste_id: :class:`str`
         The ID you wish to retrieve from the API.
@@ -89,7 +91,10 @@ class PasteData:
     paste_date: :class:`datetime.datetime`
         The date this paste was created on the API.
     """
-    __slots__ = ("paste_id", "_paste_data", "paste_content", "paste_syntax", "paste_nick", "paste_date")
+
+    __slots__ = ("paste_id", "_paste_data", "paste_content",
+                 "paste_syntax", "paste_nick", "paste_date")
+
     def __init__(self, paste_id: str, paste_data: dict):
         self.paste_id = paste_id
         self._paste_data = paste_data
@@ -119,4 +124,3 @@ class PasteData:
     def content(self) -> str:
         """ :class:`str`: Return the paste content but dedented correctly. """
         return dedent(self.paste_content)
-

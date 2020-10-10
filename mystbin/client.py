@@ -27,6 +27,7 @@ import json
 from typing import TYPE_CHECKING, Awaitable, Callable, Optional, Type, Union
 
 import aiohttp
+
 if TYPE_CHECKING:
     import requests
 
@@ -85,7 +86,7 @@ class MystbinClient:
         This will post to the Mystb.in API and return the url.
         Can pass an optional suffix for the syntax highlighting.
 
-        Attributes
+        Parameters
         ----------
         content: :class:`str`
             The content you are posting to the Mystb.in API.
@@ -131,7 +132,7 @@ class MystbinClient:
         This will perform a GET request against the Mystb.in API and return the url.
         Must be passed a valid paste ID or URL.
 
-        Attributes
+        Parameters
         ----------
         paste_id: :class:`str`
             The ID of the paste you are going to retrieve.

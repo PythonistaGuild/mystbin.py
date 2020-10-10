@@ -28,6 +28,7 @@ import sys
 
 import aiohttp
 import pkg_resources
+
 try:
     import requests
 except ImportError:

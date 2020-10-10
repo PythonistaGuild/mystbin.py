@@ -24,6 +24,8 @@ DEALINGS IN THE SOFTWARE.
 
 from re import compile
 
+__all__ = ("API_BASE_URL", "PASTE_BASE", "CLIENT_TIMEOUT", "MB_URL_RE")
+
 API_BASE_URL = "https://mystb.in/api/pastes"
 PASTE_BASE = "https://mystb.in/{}{}"
 
