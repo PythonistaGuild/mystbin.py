@@ -68,7 +68,8 @@ class MystbinClient:
         """ We will update a :class:`requests.Session` instance with the auth we require. """
         # the passed session was found to be 'sync'.
         if self.api_key:
-            session.headers.update({"Authorization": self.api_key})
+            session.headers.update(
+                {"Authorization": self.api_key, "User-Agent": "Mystbin.py"})
         return session
 
     async def _generate_async_session(self, session: Optional[aiohttp.ClientSession] = None) -> aiohttp.ClientSession:
@@ -77,7 +78,7 @@ class MystbinClient:
             session = aiohttp.ClientSession(raise_for_status=False)
         if self.api_key:
             session._default_headers.update(
-                {"Authorization": self.api_key})
+                {"Authorization": self.api_key, "User-Agent": "Mystbin.py"})
         session._timeout = aiohttp.ClientTimeout(CLIENT_TIMEOUT)
         return session
 
@@ -148,7 +149,7 @@ class MystbinClient:
 
     def _perform_sync_get(self, paste_id: str, syntax: str = None) -> PasteData:
         """ Sync get request. """
-        response: requests.Response = self.session.get(
+        response: Type["requests.Response"] = self.session.get(
             f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT)
         if response.status_code not in (200, ):
             raise BadPasteID("This is an invalid Mystb.in paste ID.")
