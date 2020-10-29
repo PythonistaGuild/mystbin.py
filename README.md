@@ -34,7 +34,8 @@ Since the project is considered multi-sync, it will work in a sync/async environ
 # async example - it will default to async
 import mystbin
 
-mystbin_client = mystbin.MystbinClient() ## api_key kwarg for authentication also
+mystbin_client = mystbin.MystbinClient()
+#NOTE: The `api_key` kwarg in the Client constructor is optional.
 
 paste = await mystbin_client.post("Hello from Mystb.in!", syntax="python")
 str(paste)
