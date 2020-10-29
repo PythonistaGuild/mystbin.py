@@ -70,15 +70,18 @@ class MystbinClient:
         if self.api_key:
             session.headers.update(
                 {"Authorization": self.api_key, "User-Agent": "Mystbin.py"})
+
         return session
 
     async def _generate_async_session(self, session: Optional[aiohttp.ClientSession] = None) -> aiohttp.ClientSession:
         """ We will update (or create) a :class:`aiohttp.ClientSession` instance with the auth we require. """
         if not session:
             session = aiohttp.ClientSession(raise_for_status=False)
+
         if self.api_key:
             session._default_headers.update(
                 {"Authorization": self.api_key, "User-Agent": "Mystbin.py"})
+
         session._timeout = aiohttp.ClientTimeout(CLIENT_TIMEOUT)
         return session
 
@@ -103,6 +106,7 @@ class MystbinClient:
         payload = {'meta': [{'index': 0, 'syntax': syntax}]}
         response: Type["requests.Response"] = self.session.post(API_BASE_URL, files={
             'data': content, 'meta': (None, json.dumps(payload), 'application/json')}, timeout=CLIENT_TIMEOUT)
+
         if response.status_code not in [200, 201]:
             raise APIError(response.status_code, response.text)
 
@@ -112,6 +116,7 @@ class MystbinClient:
         """ Async post request. """
         if not self.session and self._are_we_async:
             self.session = await self._generate_async_session()
+
         multi_part_write = aiohttp.MultipartWriter()
         paste_content = multi_part_write.append(content)
         paste_content.set_content_disposition("form-data", name="data")
@@ -119,6 +124,7 @@ class MystbinClient:
             {'meta': [{'index': 0, 'syntax': syntax}]}
         )
         paste_content.set_content_disposition("form-data", name="meta")
+
         async with self.session.post(API_BASE_URL, data=multi_part_write) as response:
             status_code = response.status
             response_text = await response.text()
@@ -139,20 +145,26 @@ class MystbinClient:
             The ID of the paste you are going to retrieve.
         """
         paste_id_match = MB_URL_RE.match(paste_id)
+
         if not paste_id_match:
             raise BadPasteID("This is an invalid Mystb.in paste ID.")
+
         paste_id = paste_id_match.group('ID')
         syntax = paste_id_match.group('syntax')
+
         if not self._are_we_async:
             return self._perform_sync_get(paste_id, syntax)
+
         return self._perform_async_get(paste_id, syntax)
 
     def _perform_sync_get(self, paste_id: str, syntax: str = None) -> PasteData:
         """ Sync get request. """
         response: Type["requests.Response"] = self.session.get(
             f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT)
+
         if response.status_code not in (200, ):
             raise BadPasteID("This is an invalid Mystb.in paste ID.")
+
         paste_data = response.json()
         return PasteData(paste_id, paste_data)
 
@@ -160,10 +172,12 @@ class MystbinClient:
         """ Async get request. """
         if not self.session:
             self.session: aiohttp.ClientSession = await self._generate_async_session()
+
         async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
             if response.status not in (200, ):
                 raise BadPasteID("This is an invalid Mystb.in paste ID.")
             paste_data = await response.json()
+
         return PasteData(paste_id, paste_data)
 
     async def close(self):
