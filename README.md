@@ -1,6 +1,6 @@
-# Mystb.in-py!
+# MystBin.py!
 
-A small simple wrapper around the [Mystb.in](https://mystb.in/) API.
+A small simple wrapper around the [MystB.in](https://mystb.in/) API.
 
 ### Features
 
@@ -34,10 +34,10 @@ Since the project is considered multi-sync, it will work in a sync/async environ
 # async example - it will default to async
 import mystbin
 
-mystbin_client = mystbin.MystbinClient()
+mystbin_client = mystbin.Client()
 #NOTE: The `api_key` kwarg in the Client constructor is optional.
 
-paste = await mystbin_client.post("Hello from Mystb.in!", syntax="python")
+paste = await mystbin_client.post("Hello from MystBin!", syntax="python")
 str(paste)
 >>> 'https://mystb.in/<your generated ID>.python'
 
@@ -46,7 +46,7 @@ paste.url
 
 get_paste = await mystbin_client.get("https://mystb.in/<your generated ID>")
 str(paste)
->>> "Hello from Mystb.in!"
+>>> "Hello from MystBin!"
 
 paste.created_at
 >>> datetime.datetime(2020, 10, 6, 10, 53, 57, 556741)
@@ -58,7 +58,7 @@ import mystbin
 import requests
 
 sync_session = requests.Session()
-mystbin_client = mystbin.MystbinClient(session=sync_session) ## optional api_key kwarg also
+mystbin_client = mystbin.Client(session=sync_session) ## optional api_key kwarg also
 
 mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
 >>> 'https://mystb.in/<your generated ID>.text'

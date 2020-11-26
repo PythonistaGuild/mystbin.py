@@ -31,14 +31,15 @@ import aiohttp
 if TYPE_CHECKING:
     import requests
 
+from . import __version__ as ver
 from .constants import *
 from .errors import *
 from .objects import *
 
-__all__ = ("MystbinClient", )
+__all__ = ("Client", )
 
 
-class MystbinClient:
+class Client:
     """
     Client for interacting with the Mystb.in API.
 
@@ -69,7 +70,7 @@ class MystbinClient:
         # the passed session was found to be 'sync'.
         if self.api_key:
             session.headers.update(
-                {"Authorization": self.api_key, "User-Agent": "Mystbin.py"})
+                {"Authorization": self.api_key, "User-Agent": f"Mystbin.py v{ver}"})
 
         return session
 
@@ -80,7 +81,7 @@ class MystbinClient:
 
         if self.api_key:
             session._default_headers.update(
-                {"Authorization": self.api_key, "User-Agent": "Mystbin.py"})
+                {"Authorization": self.api_key, "User-Agent": f"Mystbin.py v{ver}"})
 
         session._timeout = aiohttp.ClientTimeout(CLIENT_TIMEOUT)
         return session
