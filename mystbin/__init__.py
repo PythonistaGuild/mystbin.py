@@ -27,8 +27,8 @@ from collections import namedtuple
 from .client import MystbinClient
 from .errors import *
 
-__version__ = "0.3.6"
+__version__ = "1.0.0"
 VersionInfo = namedtuple(
     "VersionInfo", "major minor micro releaselevel serial")
-version_info = VersionInfo(major=0, minor=3, micro=6,
+version_info = VersionInfo(major=1, minor=0, micro=0,
                            releaselevel='final', serial=0)
