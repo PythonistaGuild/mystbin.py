@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 from collections import namedtuple
 
-from .client import MystbinClient
+from .client import Client
 from .errors import *
 
 __version__ = "1.0.0"
