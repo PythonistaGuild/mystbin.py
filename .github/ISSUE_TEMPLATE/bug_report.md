@@ -17,7 +17,7 @@ assignees: ''
 <!-- A clear and concise description of what the bug is. -->
 
 ## To Reproduce
-<!-- Steps to take to reproduce this issue. Please describe then in details and **feel free to include screenshots** -->
+<!-- Steps to take to reproduce this issue. Please describe then in details and **feel free to include screenshots**. -->
 
 ## Expected behavior
 <!-- A clear and concise description of what you expected to happen. -->

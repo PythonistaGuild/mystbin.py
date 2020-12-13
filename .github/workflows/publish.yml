@@ -1,0 +1,32 @@
+name: Publish to PyPi
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: [3.8, 3.9]
+
+      - name: Set up Poetry
+        uses: Gr1N/setup-poetry@v4
+
+      - name: Install Python deps
+        run: |
+          poetry install --no-dev
+
+      - name: Build & release
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+          poetry publish --build

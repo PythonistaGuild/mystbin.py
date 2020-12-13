@@ -45,8 +45,8 @@ class Paste:
     __slots__ = ("paste_id", "nick", "syntax")
 
     def __init__(self, json_data: dict, syntax: str = None):
-        self.paste_id = json_data['pastes'][0]['id']
-        self.nick = json_data['pastes'][0]['nick']
+        self.paste_id = json_data["pastes"][0]["id"]
+        self.nick = json_data["pastes"][0]["nick"]
         self.syntax = syntax
 
     def __str__(self) -> str:
@@ -92,16 +92,22 @@ class PasteData:
         The date this paste was created on the API.
     """
 
-    __slots__ = ("paste_id", "_paste_data", "paste_content",
-                 "paste_syntax", "paste_nick", "paste_date")
+    __slots__ = (
+        "paste_id",
+        "_paste_data",
+        "paste_content",
+        "paste_syntax",
+        "paste_nick",
+        "paste_date",
+    )
 
     def __init__(self, paste_id: str, paste_data: dict):
         self.paste_id = paste_id
         self._paste_data = paste_data
-        self.paste_content = paste_data['data']
-        self.paste_syntax = paste_data['syntax']
-        self.paste_nick = paste_data['nick']
-        self.paste_date = paste_data['created_at']
+        self.paste_content = paste_data["data"]
+        self.paste_syntax = paste_data["syntax"]
+        self.paste_nick = paste_data["nick"]
+        self.paste_date = paste_data["created_at"]
 
     def __str__(self) -> str:
         return self.content

@@ -33,4 +33,5 @@ CLIENT_TIMEOUT = 15
 
 # grab the paste id: https://regex101.com/r/qkluDh/6
 MB_URL_RE = compile(
-    r"(?:(?:https?://)?mystb\.in/)?(?P<ID>[a-zA-Z]+)(?:\.(?P<syntax>[a-zA-Z0-9]+))?")
+    r"(?:(?:https?://)?mystb\.in/)?(?P<ID>[a-zA-Z]+)(?:\.(?P<syntax>[a-zA-Z0-9]+))?"
+)

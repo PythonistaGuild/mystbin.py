@@ -41,30 +41,36 @@ def show_version():
     entries = []
 
     entries.append(
-        '- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}'.format(sys.version_info))
+        "- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(
+            sys.version_info
+        )
+    )
     version_info = mystbin.version_info
     entries.append(
-        '- mystbin.py v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}'.format(version_info))
-    if version_info.releaselevel != 'final':
-        pkg = pkg_resources.get_distribution('mystbin.py')
+        "- mystbin.py v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(
+            version_info
+        )
+    )
+    if version_info.releaselevel != "final":
+        pkg = pkg_resources.get_distribution("mystbin.py")
         if pkg:
-            entries.append(
-                '    - mystbin.py pkg_resources: v{0}'.format(pkg.version))
+            entries.append("    - mystbin.py pkg_resources: v{0}".format(pkg.version))
 
-    entries.append('- aiohttp v{0.__version__}'.format(aiohttp))
+    entries.append("- aiohttp v{0.__version__}".format(aiohttp))
     if requests is not None:
-        entries.append('  - [requests] v{0.__version__}'.format(requests))
+        entries.append("  - [requests] v{0.__version__}".format(requests))
     uname = platform.uname()
-    entries.append(
-        '- system info: {0.system} {0.release} {0.version}'.format(uname))
-    print('\n'.join(entries))
+    entries.append("- system info: {0.system} {0.release} {0.version}".format(uname))
+    print("\n".join(entries))
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        prog='mystbin', description='Tools for helping with mystbin.py')
-    parser.add_argument('-v', '--version', action='store_true',
-                        help='shows the wrapper version')
+        prog="mystbin", description="Tools for helping with mystbin.py"
+    )
+    parser.add_argument(
+        "-v", "--version", action="store_true", help="shows the wrapper version"
+    )
     parser.set_defaults(func=core)
 
     return parser, parser.parse_args()
