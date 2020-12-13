@@ -56,7 +56,9 @@ class HTTPClient:
         self,
         *,
         api_key: str = None,
-        session: Optional[Union[aiohttp.ClientSession, Type["requests.Session"]]] = None,
+        session: Optional[
+            Union[aiohttp.ClientSession, Type["requests.Session"]]
+        ] = None,
     ) -> None:
         self.api_key = api_key
         self._are_we_async = session is None or isinstance(
