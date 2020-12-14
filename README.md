@@ -45,7 +45,7 @@ paste.url
 >>> 'https://mystb.in/<your generated ID>.python'
 
 get_paste = await mystbin_client.get("https://mystb.in/<your generated ID>")
-str(paste)
+str(get_paste)
 >>> "Hello from MystBin!"
 
 paste.created_at
@@ -60,7 +60,8 @@ import requests
 sync_session = requests.Session()
 mystbin_client = mystbin.Client(session=sync_session) ## optional api_key kwarg also
 
-mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
+paste = mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
+str(paste)
 >>> 'https://mystb.in/<your generated ID>.text'
 ```
 
