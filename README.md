@@ -2,6 +2,10 @@
 
 A small simple wrapper around the [MystB.in](https://mystb.in/) API.
 
+----------
+![Code Linting](https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main)
+![Code Analysis](https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Analysis/badge.svg?branch=main)
+![Build](https://github.com/AbstractUmbra/mystbin.py/workflows/Build/badge.svg)
 ### Features
 
 - [x] - `POST`ing to the API, which will return the provided url.

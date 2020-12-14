@@ -13,7 +13,8 @@ on:
       - develop
 
 jobs:
-  build:
+  job:
+    name: Build
     runs-on: ubuntu-latest
 
     strategy:

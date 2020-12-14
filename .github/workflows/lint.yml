@@ -1,10 +1,10 @@
-name: Linting
+name: Code Linting
 
 on: [pull_request, push]
 
 jobs:
   linter:
-    name: Linting
+    name: Code Linting
     runs-on: ubuntu-latest
 
     steps:
@@ -16,3 +16,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_PYTHON_BLACK: true
+          VALIDATE_YAML: true
