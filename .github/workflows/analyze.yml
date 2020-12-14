@@ -1,4 +1,4 @@
-name: Code Analyis
+name: Code Analysis
 
 on:
   pull_request:
