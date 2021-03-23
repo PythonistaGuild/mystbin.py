@@ -21,18 +21,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
+from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Awaitable, Optional, Type, Union
+from typing import TYPE_CHECKING, Awaitable, Optional, Union
 
 import aiohttp
-
-if TYPE_CHECKING:
-    import requests
 
 from .constants import API_BASE_URL, CLIENT_TIMEOUT, MB_URL_RE
 from .errors import APIError, BadPasteID
 from .objects import Paste, PasteData
+
+if TYPE_CHECKING:
+    import requests
 
 __all__ = ("HTTPClient",)
 
@@ -56,9 +57,7 @@ class HTTPClient:
         self,
         *,
         api_key: str = None,
-        session: Optional[
-            Union[aiohttp.ClientSession, Type["requests.Session"]]
-        ] = None,
+        session: Optional[Union[aiohttp.ClientSession, requests.Session]] = None,
     ) -> None:
         self.api_key = api_key
         self._are_we_async = session is None or isinstance(
@@ -68,9 +67,7 @@ class HTTPClient:
             self._generate_sync_session(session) if not self._are_we_async else None
         )
 
-    def _generate_sync_session(
-        self, session: Type["requests.Session"]
-    ) -> Type["requests.Session"]:
+    def _generate_sync_session(self, session: requests.Session) -> requests.Session:
         """ We will update a :class:`requests.Session` instance with the auth we require. """
         # the passed session was found to be 'sync'.
         if self.api_key:
@@ -114,7 +111,7 @@ class HTTPClient:
     def _perform_sync_post(self, content: str, syntax: str = None) -> Paste:
         """ Sync post request. """
         payload = {"meta": [{"index": 0, "syntax": syntax}]}
-        response: Type["requests.Response"] = self.session.post(
+        response: requests.Response = self.session.post(
             API_BASE_URL,
             files={
                 "data": content,
@@ -175,7 +172,7 @@ class HTTPClient:
 
     def _perform_sync_get(self, paste_id: str, syntax: str = None) -> PasteData:
         """ Sync get request. """
-        response: Type["requests.Response"] = self.session.get(
+        response: requests.Response = self.session.get(
             f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT
         )
 
@@ -189,8 +186,6 @@ class HTTPClient:
         """ Async get request. """
         if not self.session:
             self.session: aiohttp.ClientSession = await self._generate_async_session()
-
-        self.session: aiohttp.ClientSession
 
         async with self.session.get(
             f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)
