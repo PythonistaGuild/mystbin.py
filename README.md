@@ -62,14 +62,15 @@ import mystbin
 import requests
 
 sync_session = requests.Session()
-mystbin_client = mystbin.Client(session=sync_session) ## optional api_key kwarg also
+mystbin_client = mystbin.Client(session=sync_session)
+#NOTE: The `api_key` kwarg in the Client constructor is optional.
 
 paste = mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
 str(paste)
 >>> 'https://mystb.in/<your generated ID>.text'
 ```
 
-NOTE: the session - aiohttp or requests - will have their default headers changed during init to support the Authorization header with the api key if present, and there is a timeout of 15s for each operation.
+NOTE: There is a timeout of 15s for each operation.
 
 ### Dependencies
 

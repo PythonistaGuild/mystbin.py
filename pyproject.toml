@@ -38,6 +38,7 @@ setuptools = "^50.3.0"
 wheel = "^0.35.1"
 black = "^20.8b1"
 flake8 = "^3.8.4"
+isort = "^5.8.0"
 
 [tool.poetry.extras]
 requests = ["requests"]
