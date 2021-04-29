@@ -29,4 +29,4 @@ from .errors import *
 
 __version__ = "1.0.1"
 VersionInfo = namedtuple("VersionInfo", "major minor micro releaselevel serial")
-version_info = VersionInfo(major=2, minor=1, micro=0, releaselevel="alpha", serial=0)
+version_info = VersionInfo(major=2, minor=1, micro=2, releaselevel="final", serial=0)

@@ -67,6 +67,15 @@ class HTTPClient:
             self._generate_sync_session(session) if not self._are_we_async else session
         )
 
+    async def _generate_async_session(self) -> aiohttp.ClientSession:
+        """
+        This method will create a new and blank `aiohttp.ClientSession` instance for use.
+        This method should not be called if a session is passed to the constructor.
+        """
+        self.session = aiohttp.ClientSession()
+
+        return self.session
+
     def post(self, content: str, syntax: str = None) -> Union[Paste, Awaitable]:
         """
         This will post to the Mystb.in API and return the url.
@@ -93,7 +102,7 @@ class HTTPClient:
                 "meta": (None, json.dumps(payload), "application/json"),
             },
             timeout=CLIENT_TIMEOUT,
-            headers={"Authorization": self.api_key}
+            headers={"Authorization": self.api_key},
         )
 
         if response.status_code not in [200, 201]:
