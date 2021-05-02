@@ -63,9 +63,7 @@ class HTTPClient:
         self._are_we_async = session is None or isinstance(
             session, aiohttp.ClientSession
         )
-        self.session = (
-            self._generate_sync_session(session) if not self._are_we_async else session
-        )
+        self.session = session
 
     async def _generate_async_session(self) -> aiohttp.ClientSession:
         """
