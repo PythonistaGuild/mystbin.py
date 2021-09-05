@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 AbstractUmbra
+Copyright (c) 2020-Present AbstractUmbra
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -29,6 +29,7 @@ import sys
 import aiohttp
 import pkg_resources
 
+
 try:
     import requests
 except ImportError:
@@ -40,17 +41,9 @@ import mystbin
 def show_version():
     entries = []
 
-    entries.append(
-        "- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(
-            sys.version_info
-        )
-    )
+    entries.append("- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(sys.version_info))
     version_info = mystbin.version_info
-    entries.append(
-        "- mystbin.py v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(
-            version_info
-        )
-    )
+    entries.append("- mystbin.py v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(version_info))
     if version_info.releaselevel != "final":
         pkg = pkg_resources.get_distribution("mystbin.py")
         if pkg:
@@ -65,12 +58,8 @@ def show_version():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        prog="mystbin", description="Tools for helping with mystbin.py"
-    )
-    parser.add_argument(
-        "-v", "--version", action="store_true", help="shows the wrapper version"
-    )
+    parser = argparse.ArgumentParser(prog="mystbin", description="Tools for helping with mystbin.py")
+    parser.add_argument("-v", "--version", action="store_true", help="shows the wrapper version")
     parser.set_defaults(func=core)
 
     return parser, parser.parse_args()

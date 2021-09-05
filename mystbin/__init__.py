@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 AbstractUmbra
+Copyright (c) 2020-Present AbstractUmbra
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -22,11 +22,19 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from collections import namedtuple
+from typing import Literal, NamedTuple
 
 from .client import HTTPClient as Client
 from .errors import *
 
-__version__ = "1.0.1"
-VersionInfo = namedtuple("VersionInfo", "major minor micro releaselevel serial")
-version_info = VersionInfo(major=2, minor=1, micro=3, releaselevel="final", serial=0)
+
+class VersionInfo(NamedTuple):
+    major: int
+    minor: int
+    micro: int
+    releaselevel: Literal["alpha", "beta", "candidate", "final"]
+    serial: int
+
+
+__version__ = "2.1.3"
+version_info: VersionInfo = VersionInfo(major=2, minor=1, micro=3, releaselevel="final", serial=0)

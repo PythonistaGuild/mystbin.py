@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 AbstractUmbra
+Copyright (c) 2020-Present AbstractUmbra
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -32,6 +32,7 @@ from .constants import API_BASE_URL, CLIENT_TIMEOUT, MB_URL_RE
 from .errors import APIError, BadPasteID
 from .objects import Paste, PasteData
 
+
 if TYPE_CHECKING:
     import requests
 
@@ -60,9 +61,7 @@ class HTTPClient:
         session: Optional[Union[aiohttp.ClientSession, requests.Session]] = None,
     ) -> None:
         self.api_key = api_key
-        self._are_we_async = session is None or isinstance(
-            session, aiohttp.ClientSession
-        )
+        self._are_we_async = session is None or isinstance(session, aiohttp.ClientSession)
         self.session = session
 
     async def _generate_async_session(self) -> aiohttp.ClientSession:
@@ -116,9 +115,7 @@ class HTTPClient:
         multi_part_write = aiohttp.MultipartWriter()
         paste_content = multi_part_write.append(content)
         paste_content.set_content_disposition("form-data", name="data")
-        paste_content = multi_part_write.append_json(
-            {"meta": [{"index": 0, "syntax": syntax}]}
-        )
+        paste_content = multi_part_write.append_json({"meta": [{"index": 0, "syntax": syntax}]})
         paste_content.set_content_disposition("form-data", name="meta")
 
         async with self.session.post(
@@ -159,9 +156,7 @@ class HTTPClient:
 
     def _perform_sync_get(self, paste_id: str) -> PasteData:
         """ Sync get request. """
-        response: requests.Response = self.session.get(
-            f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT
-        )
+        response: requests.Response = self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT)
 
         if response.status_code not in (200,):
             raise BadPasteID("This is an invalid Mystb.in paste ID.")
@@ -174,9 +169,7 @@ class HTTPClient:
         if not self.session:
             self.session: aiohttp.ClientSession = await self._generate_async_session()
 
-        async with self.session.get(
-            f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)
-        ) as response:
+        async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
             if response.status not in (200,):
                 raise BadPasteID("This is an invalid Mystb.in paste ID.")
             paste_data = await response.json()

@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 AbstractUmbra
+Copyright (c) 2020-Present AbstractUmbra
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 from re import compile
 
+
 __all__ = ("API_BASE_URL", "PASTE_BASE", "CLIENT_TIMEOUT", "MB_URL_RE")
 
 API_BASE_URL = "https://mystb.in/api/pastes"
@@ -32,6 +33,4 @@ PASTE_BASE = "https://mystb.in/{}{}"
 CLIENT_TIMEOUT = 15
 
 # grab the paste id: https://regex101.com/r/qkluDh/6
-MB_URL_RE = compile(
-    r"(?:(?:https?://)?mystb\.in/)?(?P<ID>[a-zA-Z]+)(?:\.(?P<syntax>[a-zA-Z0-9]+))?"
-)
+MB_URL_RE = compile(r"(?:(?:https?://)?mystb\.in/)?(?P<ID>[a-zA-Z]+)(?:\.(?P<syntax>[a-zA-Z0-9]+))?")
