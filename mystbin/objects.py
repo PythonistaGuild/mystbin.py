@@ -57,7 +57,7 @@ class Paste:
 
     @property
     def url(self) -> str:
-        """ :class:`str`: Returns the formatted url of ID and syntax. """
+        """:class:`str`: Returns the formatted url of ID and syntax."""
         syntax = f".{self.syntax}" if self.syntax else ""
         return PASTE_BASE.format(self.paste_id, syntax)
 
@@ -117,16 +117,16 @@ class PasteData:
 
     @property
     def url(self) -> str:
-        """ :class:`str`: The Paste ID's URL """
+        """:class:`str`: The Paste ID's URL."""
         syntax = f".{self.paste_syntax}" if self.paste_syntax else ""
         return PASTE_BASE.format(self.paste_id, syntax)
 
     @property
     def created_at(self) -> datetime.datetime:
-        """ :class:`datetime.datetime`: Returns a UTC datetime of when the paste was created. """
+        """:class:`datetime.datetime`: Returns a UTC datetime of when the paste was created."""
         return datetime.datetime.strptime(self.paste_date, "%Y-%m-%dT%H:%M:%S.%f")
 
     @property
     def content(self) -> str:
-        """ :class:`str`: Return the paste content but dedented correctly. """
+        """:class:`str`: Return the paste content but dedented correctly."""
         return dedent(self.paste_content)
