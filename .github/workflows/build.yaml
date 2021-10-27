@@ -1,0 +1,82 @@
+# Runs a build test on commit to ensure functionality.
+
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*.*.*'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ 3.9 ]
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up Poetry
+        uses: Gr1N/setup-poetry@v4
+
+      - name: Install Python deps
+        run: |
+          poetry install --no-dev
+
+      - name: Check it imports
+        run: |
+          poetry run python -c 'import mystbin'
+
+      - name: Build wheels
+        run: |
+          poetry build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: distributions
+          path: dist/*
+
+  # Credits to most of this step go to Gorialis (Devon R [https://github.com/Gorialis])
+  # as I found them in their Jishaku builds (https://github.com/Gorialis/jishaku/blob/d3f50749b5a977b544e5fd14894585f656247486/.github/workflows/deploy.yml#L82-L119)
+  create_release:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: distributions
+          path: dist
+
+      - name: Set up Poetry
+        uses: Gr1N/setup-poetry@v4
+
+      - name: Publish to PyPI
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry publish
