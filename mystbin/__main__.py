@@ -21,10 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
+from __future__ import annotations
 
 import argparse
 import platform
 import sys
+from typing import List, Tuple
 
 import aiohttp
 import pkg_resources
@@ -38,26 +40,30 @@ except ImportError:
 import mystbin
 
 
-def show_version():
-    entries = []
+def show_version() -> None:
+    entries: List[str] = []
 
     entries.append("- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(sys.version_info))
     version_info = mystbin.version_info
     entries.append("- mystbin.py v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(version_info))
+
     if version_info.releaselevel != "final":
         pkg = pkg_resources.get_distribution("mystbin.py")
         if pkg:
             entries.append("    - mystbin.py pkg_resources: v{0}".format(pkg.version))
 
     entries.append("- aiohttp v{0.__version__}".format(aiohttp))
+
     if requests is not None:
         entries.append("  - [requests] v{0.__version__}".format(requests))
+
     uname = platform.uname()
     entries.append("- system info: {0.system} {0.release} {0.version}".format(uname))
+
     print("\n".join(entries))
 
 
-def parse_args():
+def parse_args() -> Tuple[argparse.ArgumentParser, argparse.Namespace]:
     parser = argparse.ArgumentParser(prog="mystbin", description="Tools for helping with mystbin.py")
     parser.add_argument("-v", "--version", action="store_true", help="shows the wrapper version")
     parser.set_defaults(func=core)
@@ -65,12 +71,12 @@ def parse_args():
     return parser, parser.parse_args()
 
 
-def core(parser, args):
+def core(_: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     if args.version:
         show_version()
 
 
-def main():
+def main() -> None:
     parser, args = parse_args()
     args.func(parser, args)
 

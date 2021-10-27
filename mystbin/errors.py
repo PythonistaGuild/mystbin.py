@@ -26,11 +26,11 @@ __all__ = ("APIError", "BadPasteID")
 
 
 class BadPasteID(ValueError):
-    """ Bad Paste ID. """
+    """Bad Paste ID."""
 
 
 class MystbinException(Exception):
-    """ Error when interacting with Mystbin. """
+    """Error when interacting with Mystbin."""
 
 
 class APIError(MystbinException):
@@ -48,8 +48,8 @@ class APIError(MystbinException):
     __slots__ = ("status_code", "message")
 
     def __init__(self, status_code: int, message: str):
-        self.status_code = status_code
-        self.message = message
+        self.status_code: int = status_code
+        self.message: str = message
 
     def __repr__(self) -> str:
         return f"<MystbinError status_code={self.status_code} message={self.message}>"

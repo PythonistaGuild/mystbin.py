@@ -24,6 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 import datetime
 from textwrap import dedent
+from typing import Any, Dict, Optional
 
 from .constants import PASTE_BASE
 
@@ -45,9 +46,9 @@ class Paste:
     __slots__ = ("paste_id", "nick", "syntax")
 
     def __init__(self, json_data: dict, syntax: str = None):
-        self.paste_id = json_data["pastes"][0]["id"]
-        self.nick = json_data["pastes"][0]["nick"]
-        self.syntax = syntax
+        self.paste_id: str = json_data["pastes"][0]["id"]
+        self.nick: Optional[str] = json_data["pastes"][0]["nick"]
+        self.syntax: Optional[str] = syntax
 
     def __str__(self) -> str:
         return self.url
@@ -61,7 +62,7 @@ class Paste:
         syntax = f".{self.syntax}" if self.syntax else ""
         return PASTE_BASE.format(self.paste_id, syntax)
 
-    def with_syntax(self, new_syntax: str) -> str:
+    def with_syntax(self, new_syntax: Optional[str]) -> str:
         """
         Changes the syntax of the current Paste to `new_syntax`
 
@@ -86,9 +87,9 @@ class PasteData:
         The content returned from the paste.
     paste_syntax: :class:`str`
         The syntax you specified that this Paste is in.
-    paste_nick: :class:`str`
+    paste_nick: Optional[:class:`str`]
         The nick set for this paste on the API.
-    paste_date: :class:`datetime.datetime`
+    paste_date: :class:`str`
         The date this paste was created on the API.
     """
 
@@ -101,13 +102,13 @@ class PasteData:
         "paste_date",
     )
 
-    def __init__(self, paste_id: str, paste_data: dict):
-        self.paste_id = paste_id
-        self._paste_data = paste_data
-        self.paste_content = paste_data["data"]
-        self.paste_syntax = paste_data["syntax"]
-        self.paste_nick = paste_data["nick"]
-        self.paste_date = paste_data["created_at"]
+    def __init__(self, paste_id: str, paste_data: Dict[str, Any]):
+        self.paste_id: str = paste_id
+        self._paste_data: Dict[str, Any] = paste_data
+        self.paste_content: str = paste_data["data"]
+        self.paste_syntax: str = paste_data["syntax"]
+        self.paste_nick: Optional[str] = paste_data["nick"]
+        self.paste_date: str = paste_data["created_at"]
 
     def __str__(self) -> str:
         return self.content
