@@ -45,7 +45,7 @@ class Paste:
 
     __slots__ = ("paste_id", "nick", "syntax")
 
-    def __init__(self, json_data: dict, syntax: str = None):
+    def __init__(self, json_data: Dict[str, Any], syntax: str = None):
         self.paste_id: str = json_data["pastes"][0]["id"]
         self.nick: Optional[str] = json_data["pastes"][0]["nick"]
         self.syntax: Optional[str] = syntax

@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Coroutine, Optional, Union
+from typing import TYPE_CHECKING, Optional
 
 import aiohttp
 
@@ -36,10 +36,13 @@ from .objects import Paste, PasteData
 if TYPE_CHECKING:
     import requests
 
-__all__ = ("HTTPClient",)
+__all__ = (
+    "Client",
+    "SyncClient",
+)
 
 
-class HTTPClient:
+class Client:
     """
     Client for interacting with the Mystb.in API.
 
@@ -49,27 +52,23 @@ class HTTPClient:
         Optional session to be passed to the creation of the client.
     """
 
-    __slots__ = (
-        "session",
-        "_are_we_async",
-    )
+    __slots__ = ("session",)
 
     def __init__(
         self,
         *,
-        session: Optional[Union[aiohttp.ClientSession, requests.Session]] = None,
+        session: Optional[aiohttp.ClientSession] = None,
     ) -> None:
-        self._are_we_async = session is None or isinstance(session, aiohttp.ClientSession)
-        self.session = session  # type: ignore
+        self.session: Optional[aiohttp.ClientSession] = session
 
     async def _generate_async_session(self) -> None:
         """
         This method will create a new and blank `aiohttp.ClientSession` instance for use.
         This method should not be called if a session is passed to the constructor.
         """
-        self.session: aiohttp.ClientSession = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession()
 
-    def post(self, content: str, syntax: str = None) -> Union[Paste, Coroutine[None, None, Paste]]:
+    async def post(self, content: str, syntax: str = None) -> Paste:
         """
         This will post to the Mystb.in API and return the url.
         Can pass an optional suffix for the syntax highlighting.
@@ -81,36 +80,10 @@ class HTTPClient:
         syntax: :class:`str`
             The optional suffix to append the returned URL which is used for syntax highlighting on the paste.
         """
-        if self._are_we_async:
-            return self._perform_async_post(content, syntax)
-        return self._perform_sync_post(content, syntax)
-
-    def _perform_sync_post(self, content: str, syntax: str = None) -> Paste:
-        assert not isinstance(self.session, aiohttp.ClientSession)
-
-        payload = {"meta": [{"index": 0, "syntax": syntax}]}
-
-        assert self.session is not None and not isinstance(self.session, aiohttp.ClientSession)
-
-        response: requests.Response = self.session.post(
-            API_BASE_URL,
-            files={
-                "data": content,
-                "meta": (None, json.dumps(payload), "application/json"),
-            },
-            timeout=CLIENT_TIMEOUT,
-        )
-
-        if response.status_code not in [200, 201]:
-            raise APIError(response.status_code, response.text)
-
-        return Paste(response.json(), syntax)
-
-    async def _perform_async_post(self, content: str, syntax: str = None) -> Paste:
-        if not self.session and self._are_we_async:
+        if not self.session:
             await self._generate_async_session()
 
-        assert self.session is not None and isinstance(self.session, aiohttp.ClientSession)
+        assert self.session is not None
 
         multi_part_write = aiohttp.MultipartWriter()
         paste_content = multi_part_write.append(content)
@@ -126,14 +99,14 @@ class HTTPClient:
             status_code = response.status
             response_text = await response.text()
 
-            if status_code != 200:
+            if not 200 <= status_code < 300:
                 raise APIError(status_code, response_text)
 
             response_data = await response.json()
 
         return Paste(response_data, syntax)
 
-    def get(self, paste_id: str) -> Union[PasteData, Coroutine[None, None, PasteData]]:
+    async def get(self, paste_id: str) -> PasteData:
         """
         This will perform a GET request against the Mystb.in API and return the url.
         Must be passed a valid paste ID or URL.
@@ -150,29 +123,13 @@ class HTTPClient:
 
         paste_id = paste_id_match.group("ID")
 
-        if not self._are_we_async:
-            return self._perform_sync_get(paste_id)
-
-        return self._perform_async_get(paste_id)
-
-    def _perform_sync_get(self, paste_id: str) -> PasteData:
-        assert self.session is not None and not isinstance(self.session, aiohttp.ClientSession)
-
-        with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT) as response:
-            if response.status_code not in (200,):
-                raise BadPasteID("This is an invalid Mystb.in paste ID.")
-
-        paste_data = response.json()
-        return PasteData(paste_id, paste_data)
-
-    async def _perform_async_get(self, paste_id: str) -> PasteData:
         if not self.session:
             await self._generate_async_session()
 
-        assert self.session is not None and isinstance(self.session, aiohttp.ClientSession)
+        assert self.session is not None
 
         async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
-            if response.status not in (200,):
+            if 200 <= response.status < 300:
                 raise BadPasteID("This is an invalid Mystb.in paste ID.")
             paste_data = await response.json()
 
@@ -182,3 +139,40 @@ class HTTPClient:
         """Async only - close the session."""
         if self.session and isinstance(self.session, aiohttp.ClientSession):
             await self.session.close()
+
+
+class SyncClient:
+    def __init__(self, *, session: requests.Session = None) -> None:
+        self.session: requests.Session = session or requests.Session()
+
+    def post(self, content: str, syntax: str = None) -> Paste:
+        payload = {"meta": [{"index": 0, "syntax": syntax}]}
+
+        response: requests.Response = self.session.post(
+            API_BASE_URL,
+            files={
+                "data": content,
+                "meta": (None, json.dumps(payload), "application/json"),
+            },
+            timeout=CLIENT_TIMEOUT,
+        )
+
+        if 200 <= response.status_code < 300:
+            raise APIError(response.status_code, response.text)
+
+        return Paste(response.json(), syntax)
+
+    def get(self, paste_id: str) -> PasteData:
+        paste_id_match = MB_URL_RE.match(paste_id)
+
+        if not paste_id_match:
+            raise BadPasteID("This is an invalid Mystb.in paste ID.")
+
+        paste_id = paste_id_match.group("ID")
+
+        with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT) as response:
+            if 200 <= response.status_code < 300:
+                raise BadPasteID("This is an invalid Mystb.in paste ID.")
+
+        paste_data = response.json()
+        return PasteData(paste_id, paste_data)

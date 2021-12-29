@@ -24,8 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 from typing import Literal, NamedTuple
 
-from .client import HTTPClient as Client
+from .client import Client as Client
+from .client import SyncClient as SyncClient
 from .errors import *
+from .objects import Paste as Paste
+from .objects import PasteData as PasteData
 
 
 class VersionInfo(NamedTuple):
@@ -36,5 +39,5 @@ class VersionInfo(NamedTuple):
     serial: int
 
 
-__version__ = "2.2.0"
-version_info: VersionInfo = VersionInfo(major=2, minor=2, micro=0, releaselevel="final", serial=0)
+__version__ = "3.0.0"
+version_info: VersionInfo = VersionInfo(major=3, minor=0, micro=0, releaselevel="final", serial=0)
