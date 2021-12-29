@@ -13,8 +13,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Topic :: Internet",
     "Typing :: Typed",
@@ -32,7 +30,7 @@ packages = [
 "Issue Tracker" = "https://github.com/AbstractUmbra/mystbin.py/issues"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 aiohttp = "^3.7.4"
 requests = {version = "^2.24.0", optional = true}
 sphinx = { version = "^4.0.0", optional = true }
