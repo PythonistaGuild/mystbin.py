@@ -1,11 +1,22 @@
-# MystBin.py!
+<div align="center">
+    <h1>Mystbin.py!</h1>
+    <a href='https://mystbinpy.readthedocs.io/en/latest/?badge=latest'>
+        <img src='https://readthedocs.org/projects/mystbinpy/badge/?version=latest' alt='Documentation Status' />
+    </a>
+    <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting'>
+        <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main' alt='Linting status' />
+    </a>
+    <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Analysis'>
+        <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Analysis/badge.svg?branch=main' alt='Code analysis' />
+    </a>
+    <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Build'>
+        <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Build/badge.svg' alt='Build status' />
+    </a>
+</div>
+<br>
 
 A small simple wrapper around the [MystB.in](https://mystb.in/) API.
-
 ----------
-![Code Linting](https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main)
-![Code Analysis](https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Analysis/badge.svg?branch=main)
-![Build](https://github.com/AbstractUmbra/mystbin.py/workflows/Build/badge.svg)
 ### Features
 
 - [x] - `POST`ing to the API, which will return the provided url.
@@ -39,7 +50,6 @@ Since the project is considered multi-sync, it will work in a sync/async environ
 import mystbin
 
 mystbin_client = mystbin.Client()
-#NOTE: The `api_key` kwarg in the Client constructor is optional.
 
 paste = await mystbin_client.post("Hello from MystBin!", syntax="python")
 str(paste)
@@ -57,13 +67,9 @@ paste.created_at
 ```
 
 ```py
-# sync example - we need to pass a session though
 import mystbin
-import requests
 
-sync_session = requests.Session()
-mystbin_client = mystbin.Client(session=sync_session)
-#NOTE: The `api_key` kwarg in the Client constructor is optional.
+mystbin_client = mystbin.SyncClient()
 
 paste = mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
 str(paste)
@@ -71,8 +77,3 @@ str(paste)
 ```
 
 NOTE: There is a timeout of 15s for each operation.
-
-### Dependencies
-
-`aiohttp` - required \
-`requests` - optional
