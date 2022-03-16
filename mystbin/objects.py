@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 import datetime
 from textwrap import dedent
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .constants import PASTE_BASE
 
@@ -45,7 +45,7 @@ class Paste:
 
     __slots__ = ("paste_id", "nick", "syntax")
 
-    def __init__(self, json_data: Dict[str, Any], syntax: str = None):
+    def __init__(self, json_data: dict[str, Any], syntax: Optional[str] = None):
         self.paste_id: str = json_data["pastes"][0]["id"]
         self.nick: Optional[str] = json_data["pastes"][0]["nick"]
         self.syntax: Optional[str] = syntax
@@ -102,9 +102,9 @@ class PasteData:
         "paste_date",
     )
 
-    def __init__(self, paste_id: str, paste_data: Dict[str, Any]):
+    def __init__(self, paste_id: str, paste_data: dict[str, Any]):
         self.paste_id: str = paste_id
-        self._paste_data: Dict[str, Any] = paste_data
+        self._paste_data: dict[str, Any] = paste_data
         self.paste_content: str = paste_data["data"]
         self.paste_syntax: str = paste_data["syntax"]
         self.paste_nick: Optional[str] = paste_data["nick"]

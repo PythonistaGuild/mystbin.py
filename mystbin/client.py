@@ -68,7 +68,7 @@ class Client:
         """
         self.session = aiohttp.ClientSession()
 
-    async def post(self, content: str, syntax: str = None) -> Paste:
+    async def post(self, content: str, syntax: Optional[str] = None) -> Paste:
         """
         This will post to the Mystb.in API and return the url.
         Can pass an optional suffix for the syntax highlighting.
@@ -77,7 +77,7 @@ class Client:
         -----------
         content: :class:`str`
             The content you are posting to the Mystb.in API.
-        syntax: :class:`str`
+        syntax: Optional[:class:`str`]
             The optional suffix to append the returned URL which is used for syntax highlighting on the paste.
         """
         if not self.session:
@@ -142,10 +142,10 @@ class Client:
 
 
 class SyncClient:
-    def __init__(self, *, session: requests.Session = None) -> None:
+    def __init__(self, *, session: Optional[requests.Session] = None) -> None:
         self.session: requests.Session = session or requests.Session()
 
-    def post(self, content: str, syntax: str = None) -> Paste:
+    def post(self, content: str, syntax: Optional[str] = None) -> Paste:
         payload = {"meta": [{"index": 0, "syntax": syntax}]}
 
         response: requests.Response = self.session.post(

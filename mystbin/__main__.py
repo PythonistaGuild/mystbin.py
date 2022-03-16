@@ -26,7 +26,6 @@ from __future__ import annotations
 import argparse
 import platform
 import sys
-from typing import List, Tuple
 
 import aiohttp
 import pkg_resources
@@ -41,7 +40,7 @@ import mystbin
 
 
 def show_version() -> None:
-    entries: List[str] = []
+    entries: list[str] = []
 
     entries.append("- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(sys.version_info))
     version_info = mystbin.version_info
@@ -63,7 +62,7 @@ def show_version() -> None:
     print("\n".join(entries))
 
 
-def parse_args() -> Tuple[argparse.ArgumentParser, argparse.Namespace]:
+def parse_args() -> tuple[argparse.ArgumentParser, argparse.Namespace]:
     parser = argparse.ArgumentParser(prog="mystbin", description="Tools for helping with mystbin.py")
     parser.add_argument("-v", "--version", action="store_true", help="shows the wrapper version")
     parser.set_defaults(func=core)
