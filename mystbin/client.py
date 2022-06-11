@@ -119,7 +119,7 @@ class Client:
         paste_id_match = MB_URL_RE.match(paste_id)
 
         if not paste_id_match:
-            raise BadPasteID("This is an invalid Mystb.in paste ID.")
+            raise BadPasteID("This is an invalid Mystb.in paste ID.", None)
 
         paste_id = paste_id_match.group("ID")
 
@@ -129,8 +129,8 @@ class Client:
         assert self.session is not None
 
         async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
-            if 200 <= response.status < 300:
-                raise BadPasteID("This is an invalid Mystb.in paste ID.")
+            if not 200 <= response.status < 300:
+                raise BadPasteID("This is an invalid Mystb.in paste ID.", response)
             paste_data = await response.json()
 
         return PasteData(paste_id, paste_data)
@@ -166,13 +166,13 @@ class SyncClient:
         paste_id_match = MB_URL_RE.match(paste_id)
 
         if not paste_id_match:
-            raise BadPasteID("This is an invalid Mystb.in paste ID.")
+            raise BadPasteID("This is an invalid Mystb.in paste ID.", None)
 
         paste_id = paste_id_match.group("ID")
 
         with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT) as response:
             if 200 <= response.status_code < 300:
-                raise BadPasteID("This is an invalid Mystb.in paste ID.")
+                raise BadPasteID("This is an invalid Mystb.in paste ID.", response)
 
         paste_data = response.json()
         return PasteData(paste_id, paste_data)

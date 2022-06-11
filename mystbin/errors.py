@@ -22,19 +22,34 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+from __future__ import annotations
+
+
 __all__ = (
     "BadPasteID",
     "MystbinException",
     "APIError",
 )
 
+from typing import Optional, Union
 
-class BadPasteID(ValueError):
-    """Bad Paste ID."""
+import aiohttp
+
+
+try:
+    import requests
+except ModuleNotFoundError:
+    pass
 
 
 class MystbinException(Exception):
     """Error when interacting with Mystbin."""
+    def __init__(self, /, message: str, response: Optional[Union[aiohttp.ClientResponse, requests.Response]]) -> None:
+        self.message: str = message
+        self.response: Optional[Union[aiohttp.ClientResponse, requests.Response]] = response
+
+class BadPasteID(MystbinException):
+    """Bad Paste ID."""
 
 
 class APIError(MystbinException):
