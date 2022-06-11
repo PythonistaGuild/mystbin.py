@@ -39,7 +39,6 @@ furo = { version = "*", optional = true }
 
 [tool.poetry.dev-dependencies]
 black = "*"
-isort = "^5.9.2"
 
 [tool.poetry.extras]
 requests = ["requests"]
