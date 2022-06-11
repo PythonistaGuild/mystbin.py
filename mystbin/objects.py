@@ -89,8 +89,6 @@ class PasteData:
         The syntax you specified that this Paste is in.
     paste_nick: Optional[:class:`str`]
         The nick set for this paste on the API.
-    paste_date: :class:`str`
-        The date this paste was created on the API.
     """
 
     __slots__ = (
@@ -99,7 +97,7 @@ class PasteData:
         "paste_content",
         "paste_syntax",
         "paste_nick",
-        "paste_date",
+        "_created_at",
     )
 
     def __init__(self, paste_id: str, paste_data: dict[str, Any]):
@@ -108,13 +106,13 @@ class PasteData:
         self.paste_content: str = paste_data["data"]
         self.paste_syntax: str = paste_data["syntax"]
         self.paste_nick: Optional[str] = paste_data["nick"]
-        self.paste_date: str = paste_data["created_at"]
+        self._created_at: str = paste_data["created_at"]
 
     def __str__(self) -> str:
         return self.content
 
     def __repr__(self) -> str:
-        return f"<PasteData id={self.paste_id} nick={self.paste_nick} syntax={self.paste_syntax}>"
+        return f"<PasteData id={self.paste_id!r} nick={self.paste_nick!r} syntax={self.paste_syntax!r}>"
 
     @property
     def url(self) -> str:
@@ -125,7 +123,7 @@ class PasteData:
     @property
     def created_at(self) -> datetime.datetime:
         """:class:`datetime.datetime`: Returns a UTC datetime of when the paste was created."""
-        return datetime.datetime.strptime(self.paste_date, "%Y-%m-%dT%H:%M:%S.%f")
+        return datetime.datetime.strptime(self._created_at, "%Y-%m-%dT%H:%M:%S.%f")
 
     @property
     def content(self) -> str:
