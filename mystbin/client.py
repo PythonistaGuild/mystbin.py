@@ -171,7 +171,7 @@ class SyncClient:
         paste_id = paste_id_match.group("ID")
 
         with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT) as response:
-            if 200 <= response.status_code < 300:
+            if not 200 <= response.status_code < 300:
                 raise BadPasteID("This is an invalid Mystb.in paste ID.", response)
 
         paste_data = response.json()
