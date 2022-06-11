@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Python deps
         run: |
-          pip install .
+          pip install '.[requests]'
 
       - name: Type Coverage
         uses: jakebailey/pyright-action@v1
