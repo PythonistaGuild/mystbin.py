@@ -6,9 +6,6 @@
     <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting'>
         <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main' alt='Linting status' />
     </a>
-    <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Analysis'>
-        <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Analysis/badge.svg?branch=main' alt='Code analysis' />
-    </a>
     <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Build'>
         <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Build/badge.svg' alt='Build status' />
     </a>
