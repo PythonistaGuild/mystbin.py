@@ -44,9 +44,11 @@ except ModuleNotFoundError:
 
 class MystbinException(Exception):
     """Error when interacting with Mystbin."""
+
     def __init__(self, /, message: str, response: Optional[Union[aiohttp.ClientResponse, requests.Response]]) -> None:
         self.message: str = message
         self.response: Optional[Union[aiohttp.ClientResponse, requests.Response]] = response
+
 
 class BadPasteID(MystbinException):
     """Bad Paste ID."""
