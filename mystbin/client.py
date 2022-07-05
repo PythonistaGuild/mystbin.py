@@ -24,7 +24,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 import aiohttp
 
@@ -33,8 +33,12 @@ from .errors import APIError, BadPasteID
 from .objects import Paste, PasteData
 
 
-if TYPE_CHECKING:
+try:
     import requests
+except ImportError:
+    HAS_REQUESTS = False
+else:
+    HAS_REQUESTS = True
 
 __all__ = (
     "Client",
@@ -143,6 +147,9 @@ class Client:
 
 class SyncClient:
     def __init__(self, *, session: Optional[requests.Session] = None) -> None:
+        if HAS_REQUESTS is not True:
+            raise RuntimeError("The `requests` addon is required to use the Sync client.")
+
         self.session: requests.Session = session or requests.Session()
 
     def post(self, content: str, syntax: Optional[str] = None) -> Paste:
