@@ -3,14 +3,10 @@ Exceptions
 
 .. currentmodule:: mystbin
 
-BadPasteID
-~~~~~~~~~~
-.. autoexception:: BadPasteID()
+APIException
+~~~~~~~~~~~~~
+.. autoexception:: APIException()
 
-MystbinException
-~~~~~~~~~~~~~~~~
-.. autoexception:: MystbinException()
-
-APIError
-~~~~~~~~
-.. autoexception:: APIError()
+AuthenticationRequired
+~~~~~~~~~~~~~~~~~~~~~~~
+.. autoexception:: AuthenticationRequired()

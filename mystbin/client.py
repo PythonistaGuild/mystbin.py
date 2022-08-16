@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020-Present AbstractUmbra
+Copyright (c) 2020 - Present, AbstractUmbra
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -9,10 +9,8 @@ to deal in the Software without restriction, including without limitation
 the rights to use, copy, modify, merge, publish, distribute, sublicense,
 and/or sell copies of the Software, and to permit persons to whom the
 Software is furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,165 +19,108 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
+
 from __future__ import annotations
 
-import json
-from typing import Optional
+import datetime
+from typing import Optional, overload
 
 import aiohttp
 
-from .constants import API_BASE_URL, CLIENT_TIMEOUT, MB_URL_RE
-from .errors import APIError, BadPasteID
-from .objects import Paste, PasteData
+from .http import HTTPClient
+from .paste import File, Paste
+from .utils import MISSING, require_authentication
 
 
-try:
-    import requests
-except ImportError:
-    HAS_REQUESTS = False
-else:
-    HAS_REQUESTS = True
-
-__all__ = (
-    "Client",
-    "SyncClient",
-)
+__all__ = ("Client",)
 
 
 class Client:
-    """
-    Client for interacting with the Mystb.in API.
+    __slots__ = ("http",)
 
-    Attributes
-    ----------
-    session: Optional[Union[:class:`aiohttp.ClientSession`, :class:`requests.Session`]]
-        Optional session to be passed to the creation of the client.
-    """
+    def __init__(self, *, token: Optional[str] = None, session: Optional[aiohttp.ClientSession] = None) -> None:
+        self.http = HTTPClient(token=token, session=session)
 
-    __slots__ = ("session",)
-
-    def __init__(
+    async def create_paste(
         self,
         *,
-        session: Optional[aiohttp.ClientSession] = None,
+        filename: str,
+        content: str,
+        syntax: Optional[str] = None,
+        password: Optional[str] = None,
+        expires: Optional[datetime.datetime] = None,
+    ) -> Paste:
+        file = File(filename=filename, content=content, syntax=syntax)
+        data = await self.http._create_paste(file=file, password=password, expires=expires)
+        return Paste.from_data(data)
+
+    async def create_multifile_paste(
+        self, *, files: list[File], password: Optional[str] = None, expires: Optional[datetime.datetime] = None
+    ) -> Paste:
+        data = await self.http._create_paste(files=files, password=password, expires=expires)
+        return Paste.from_data(data)
+
+    @require_authentication
+    async def delete_paste(self, paste_id: str, /) -> None:
+        await self.http._delete_pastes(paste_ids=[paste_id])
+
+    @require_authentication
+    async def delete_pastes(self, paste_ids: list[str], /) -> None:
+        await self.http._delete_pastes(paste_ids=paste_ids)
+
+    async def get_paste(self, *, paste_id: str, password: Optional[str] = None) -> Paste:
+        data = await self.http._get_paste(paste_id=paste_id, password=password)
+        return Paste.from_data(data)
+
+    @overload
+    async def edit_paste(self, paste_id: str, *, new_content: str, new_filename: ..., new_expires: ...) -> None:
+        ...
+
+    @overload
+    async def edit_paste(self, paste_id: str, *, new_content: ..., new_filename: str, new_expires: ...) -> None:
+        ...
+
+    @overload
+    async def edit_paste(
+        self, paste_id: str, *, new_content: ..., new_filename: ..., new_expires: datetime.datetime
     ) -> None:
-        self.session: Optional[aiohttp.ClientSession] = session
+        ...
 
-    async def _generate_async_session(self) -> None:
-        """
-        This method will create a new and blank `aiohttp.ClientSession` instance for use.
-        This method should not be called if a session is passed to the constructor.
-        """
-        self.session = aiohttp.ClientSession()
+    @overload
+    async def edit_paste(self, paste_id: str, *, new_content: str, new_filename: str, new_expires: ...) -> None:
+        ...
 
-    async def post(self, content: str, syntax: Optional[str] = None) -> Paste:
-        """
-        This will post to the Mystb.in API and return the url.
-        Can pass an optional suffix for the syntax highlighting.
+    @overload
+    async def edit_paste(
+        self, paste_id: str, *, new_content: str, new_filename: ..., new_expires: datetime.datetime
+    ) -> None:
+        ...
 
-        Parameters
-        -----------
-        content: :class:`str`
-            The content you are posting to the Mystb.in API.
-        syntax: Optional[:class:`str`]
-            The optional suffix to append the returned URL which is used for syntax highlighting on the paste.
-        """
-        if not self.session:
-            await self._generate_async_session()
+    @overload
+    async def edit_paste(
+        self, paste_id: str, *, new_content: ..., new_filename: str, new_expires: datetime.datetime
+    ) -> None:
+        ...
 
-        assert self.session is not None
+    @overload
+    async def edit_paste(
+        self, paste_id: str, *, new_content: str, new_filename: str, new_expires: datetime.datetime
+    ) -> None:
+        ...
 
-        multi_part_write = aiohttp.MultipartWriter()
-        paste_content = multi_part_write.append(content)
-        paste_content.set_content_disposition("form-data", name="data")
-        paste_content = multi_part_write.append_json({"meta": [{"index": 0, "syntax": syntax}]})
-        paste_content.set_content_disposition("form-data", name="meta")
+    @require_authentication
+    async def edit_paste(
+        self,
+        paste_id: str,
+        *,
+        new_content: Optional[str] = MISSING,
+        new_filename: Optional[str] = MISSING,
+        new_expires: Optional[datetime.datetime] = MISSING,
+    ) -> None:
+        await self.http._edit_paste(paste_id)
 
-        async with self.session.post(
-            API_BASE_URL,
-            data=multi_part_write,
-            timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT),
-        ) as response:
-            status_code = response.status
-            response_text = await response.text()
+    @require_authentication
+    async def get_user_pastes(self, *, limit: int = 100) -> list[Paste]:
+        data = await self.http._get_my_pastes(limit=limit)
 
-            if not 200 <= status_code < 300:
-                raise APIError(status_code, response_text)
-
-            response_data = await response.json()
-
-        return Paste(response_data, syntax)
-
-    async def get(self, paste_id: str) -> PasteData:
-        """
-        This will perform a GET request against the Mystb.in API and return the url.
-        Must be passed a valid paste ID or URL.
-
-        Parameters
-        ----------
-        paste_id: :class:`str`
-            The ID of the paste you are going to retrieve.
-        """
-        paste_id_match = MB_URL_RE.match(paste_id)
-
-        if not paste_id_match:
-            raise BadPasteID("This is an invalid Mystb.in paste ID.", None)
-
-        paste_id = paste_id_match.group("ID")
-
-        if not self.session:
-            await self._generate_async_session()
-
-        assert self.session is not None
-
-        async with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=aiohttp.ClientTimeout(CLIENT_TIMEOUT)) as response:
-            if not 200 <= response.status < 300:
-                raise BadPasteID("This is an invalid Mystb.in paste ID.", response)
-            paste_data = await response.json()
-
-        return PasteData(paste_id, paste_data)
-
-    async def close(self) -> None:
-        """Async only - close the session."""
-        if self.session and isinstance(self.session, aiohttp.ClientSession):
-            await self.session.close()
-
-
-class SyncClient:
-    def __init__(self, *, session: Optional[requests.Session] = None) -> None:
-        if HAS_REQUESTS is not True:
-            raise RuntimeError("The `requests` addon is required to use the Sync client.")
-
-        self.session: requests.Session = session or requests.Session()
-
-    def post(self, content: str, syntax: Optional[str] = None) -> Paste:
-        payload = {"meta": [{"index": 0, "syntax": syntax}]}
-
-        response: requests.Response = self.session.post(
-            API_BASE_URL,
-            files={
-                "data": content,
-                "meta": (None, json.dumps(payload), "application/json"),
-            },
-            timeout=CLIENT_TIMEOUT,
-        )
-
-        if 200 <= response.status_code < 300:
-            raise APIError(response.status_code, response.text)
-
-        return Paste(response.json(), syntax)
-
-    def get(self, paste_id: str) -> PasteData:
-        paste_id_match = MB_URL_RE.match(paste_id)
-
-        if not paste_id_match:
-            raise BadPasteID("This is an invalid Mystb.in paste ID.", None)
-
-        paste_id = paste_id_match.group("ID")
-
-        with self.session.get(f"{API_BASE_URL}/{paste_id}", timeout=CLIENT_TIMEOUT) as response:
-            if not 200 <= response.status_code < 300:
-                raise BadPasteID("This is an invalid Mystb.in paste ID.", response)
-
-        paste_data = response.json()
-        return PasteData(paste_id, paste_data)
+        return [Paste.from_data(x) for x in data]

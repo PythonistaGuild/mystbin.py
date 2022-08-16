@@ -22,13 +22,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
+__version__ = "5.0.0a"
+
 from typing import Literal, NamedTuple
 
 from .client import Client as Client
-from .client import SyncClient as SyncClient
-from .errors import *
-from .objects import Paste as Paste
-from .objects import PasteData as PasteData
+from .paste import File as File
+from .paste import Paste as Paste
 
 
 class VersionInfo(NamedTuple):
@@ -39,5 +39,4 @@ class VersionInfo(NamedTuple):
     serial: int
 
 
-__version__ = "4.0.2"
-version_info: VersionInfo = VersionInfo(major=4, minor=0, micro=2, releaselevel="final", serial=0)
+version_info: VersionInfo = VersionInfo(major=5, minor=0, micro=0, releaselevel="alpha", serial=0)

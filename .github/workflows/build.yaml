@@ -19,33 +19,35 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [ 3.9 ]
+        python-version: [ "3.9", "3.10" ]
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: "Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set up Poetry
-        uses: Gr1N/setup-poetry@v4
+      - name: "Set up Poetry ${{ matrix.python-version }}"
+        uses: Gr1N/setup-poetry@v7
+        with:
+          poetry-preview: true
 
-      - name: Install Python deps
+      - name: "Install Python deps ${{ matrix.python-version }}"
         run: |
-          poetry install -E requests --no-dev
+          poetry install --all-extras
 
-      - name: Check it imports
+      - name: "Check it imports ${{ matrix.python-version }}"
         run: |
           poetry run python -c 'import mystbin'
 
-      - name: Build wheels
+      - name: "Build wheels ${{ matrix.python-version }}"
         run: |
           poetry build
 
-      - name: Upload artifacts
+      - name: "Upload artifacts ${{ matrix.python-version }}"
         uses: actions/upload-artifact@v2
         with:
           name: distributions
@@ -72,7 +74,9 @@ jobs:
           path: dist
 
       - name: Set up Poetry
-        uses: Gr1N/setup-poetry@v4
+        uses: Gr1N/setup-poetry@v7
+        with:
+          poetry-preview: true
 
       - name: Publish to PyPI
         env:

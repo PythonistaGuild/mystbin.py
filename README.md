@@ -13,16 +13,17 @@
 <br>
 
 A small simple wrapper around the [MystB.in](https://mystb.in/) API.
+API docs can be found [here](https://api.mystb.in/docs).
 ----------
 ### Features
 
-- [x] - `POST`ing to the API, which will return the provided url.
-- [x] - `GET`ting from the API, provided you know the URL or paste ID.
-- [ ] - `DELETE`ing from the API, provided the paste is attached to your account.
-- [ ] - `PATCH`ing to the API, provided the paste is attached to your account.
-- [x] - Ability to pass in a sync or async session / parameter so it is flexible.
-- [x] - Write a real underlying Client for this, it will be required for...
-- [ ] - ... Authorization. Awaiting the API making this public as it is still WIP.
+- [x] - Creating pastes.
+- [x] - Editing pastes.
+- [x] - Deleting pastes.
+- [x] - Getting pastes.
+- [ ] - User endpoints.
+- [ ] - Sync client.
+  - This one will take some time as I have no motivation to do it, but PRs are welcome if others want to do it.
 
 ### Installation
 This project will be on [PyPI](https://pypi.org/project/mystbin.py/) as a stable release, you can always find that there.
