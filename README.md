@@ -12,7 +12,7 @@
 </div>
 <br>
 
-A small simple wrapper around the [MystB.in](https://mystb.in/) API.
+A small simple wrapper around the [Mystb.in](https://mystb.in/) API.
 API docs can be found [here](https://api.mystb.in/docs).
 ----------
 ### Features
@@ -49,29 +49,37 @@ import mystbin
 
 mystbin_client = mystbin.Client()
 
-paste = await mystbin_client.post("Hello from MystBin!", syntax="python")
+paste = await client.create_paste(filename="Hello.txt", content="Hello there!", syntax="txt")
 str(paste)
->>> 'https://mystb.in/<your generated ID>.python'
+>>> 'https://mystb.in/<your generated ID>'
 
-paste.url
->>> 'https://mystb.in/<your generated ID>.python'
+get_paste = await mystbin_client.get_paste("<your generated ID>")
+get_paste.files[0].content
+>>> "Hello there!"
 
-get_paste = await mystbin_client.get("https://mystb.in/<your generated ID>")
-str(get_paste)
->>> "Hello from MystBin!"
-
-paste.created_at
+get_paste.created_at
 >>> datetime.datetime(2020, 10, 6, 10, 53, 57, 556741)
 ```
 
+Or if you want to create a paste with multiple files...
 ```py
 import mystbin
 
-mystbin_client = mystbin.SyncClient()
+file = mystbin.File(filename="File1.txt", content="Hello there!", syntax="txt")
+file2 = mystbin.File(filename="test.py", content="print('hello!')", syntax="py")
 
-paste = mystbin_client.post("Hello from sync Mystb.in!", syntax="text")
-str(paste)
->>> 'https://mystb.in/<your generated ID>.text'
+paste = await client.create_multifile_paste(files=[file, file2])
+
+for file in paste.files:
+    print(file.content)
+
+>>> "Hello there!"
+>>> "print('hello!')"
 ```
 
-NOTE: There is a timeout of 15s for each operation.
+If you have any question please feel free to join the Pythonista Discord server:
+<div align="left">
+    <a href="https://discord.gg/RAKc3HF">
+        <img src="https://discordapp.com/api/guilds/490948346773635102/widget.png?style=banner2" alt="Discord Server"/>
+    </a>
+</div>
