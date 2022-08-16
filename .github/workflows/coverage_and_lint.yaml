@@ -2,34 +2,68 @@ name: Type Coverage and Linting
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
   pull_request:
-    branches: [main, develop]
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
 
 jobs:
   job:
-    name: Type Coverage and Linting
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.9', '3.10' ]
+
+    name: "Type Coverage and Linting @ ${{ matrix.python-version }}"
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Python 3.9
-        uses: actions/setup-python@v1
+      - name: "Checkout Repository"
+        uses: actions/checkout@v3
         with:
-          python-version: 3.9
+          fetch-depth: 0
 
-      - name: Install Python deps
+      - name: "Setup Poetry @ ${{ matrix.python-version }}"
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.2.0b2
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+
+      - name: "Setup Python @ ${{ matrix.python-version }}"
+        uses: actions/setup-python@v3
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Install Python deps @ ${{ matrix.python-version }}"
+        env:
+          PY_VER: "${{ matrix.python-version }}"
         run: |
-          pip install '.[requests]'
+          poetry env use "$PY_VER"
+          poetry install --all-extras --no-interaction
 
-      - name: Type Coverage
-        uses: jakebailey/pyright-action@v1
+      - uses: actions/setup-node@v3
         with:
-          python-version: 3.9
-          project: "pyproject.toml"
+            node-version: "17"
+      - run: npm install --location=global pyright@latest
+
+      - name: "Type Coverage @ ${{ matrix.python-version }}"
+        run: |
+          poetry run pyright
+          poetry run pyright --ignoreexternal --lib --verifytypes hondana
 
       - name: Lint
-        uses: github/super-linter@v4
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: github/super-linter/slim@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: main
+          VALIDATE_ALL_CODEBASE: false
           VALIDATE_PYTHON_BLACK: true
           VALIDATE_PYTHON_ISORT: true
+          LINTER_RULES_PATH: /
+          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
+          PYTHON_BLACK_CONFIG_FILE: pyproject.toml
