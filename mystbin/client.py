@@ -39,7 +39,7 @@ class Client:
     __slots__ = ("http",)
 
     def __init__(self, *, token: Optional[str] = None, session: Optional[aiohttp.ClientSession] = None) -> None:
-        self.http = HTTPClient(token=token, session=session)
+        self.http: HTTPClient = HTTPClient(token=token, session=session)
 
     async def create_paste(
         self,
