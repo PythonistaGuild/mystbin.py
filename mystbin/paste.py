@@ -107,7 +107,7 @@ class Paste:
         self.views: Optional[int] = views
 
     def __str__(self) -> str:
-        return f"Paste with ID: {self.id!r}."
+        return f"https://mystb.in/{self.id}"
 
     def __repr__(self) -> str:
         return f"<Paste id={self.id!r} files={len(self.files)}>"

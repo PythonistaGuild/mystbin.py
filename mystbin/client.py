@@ -68,7 +68,7 @@ class Client:
     async def delete_pastes(self, paste_ids: list[str], /) -> None:
         await self.http._delete_pastes(paste_ids=paste_ids)
 
-    async def get_paste(self, *, paste_id: str, password: Optional[str] = None) -> Paste:
+    async def get_paste(self, paste_id: str, *, password: Optional[str] = None) -> Paste:
         data = await self.http._get_paste(paste_id=paste_id, password=password)
         return Paste.from_data(data)
 
