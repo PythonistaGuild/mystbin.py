@@ -2,11 +2,11 @@
 name = "mystbin.py"
 version = "5.0.0"
 description = "A small simple wrapper around the mystb.in API."
-authors = ["AbstractUmbra <Umbra@AbstractUmbra.xyz>"]
+authors = ["AbstractUmbra <Umbra@AbstractUmbra.dev>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/AbstractUmbra/mystbin-py"
-repository = "https://github.com/AbstractUmbra/mystbin-py"
+homepage = "https://github.com/PythonistaGuild/mystbin-py"
+repository = "https://github.com/PythonistaGuild/mystbin-py"
 keywords = ["mystbin",  "paste"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
@@ -28,7 +28,7 @@ packages = [
 ]
 
 [tool.poetry.urls]
-"Issue Tracker" = "https://github.com/AbstractUmbra/mystbin.py/issues"
+"Issue Tracker" = "https://github.com/PythonistaGuild/mystbin.py/issues"
 
 [tool.poetry.dependencies]
 python = "^3.9"

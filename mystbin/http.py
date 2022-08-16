@@ -1,7 +1,7 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2020 - Present, AbstractUmbra
+Copyright (c) 2020 - Present, PythonistaGuild
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -139,7 +139,7 @@ class HTTPClient:
         self._token: Optional[str] = token
         self.__session: Optional[aiohttp.ClientSession] = session
         self._locks: weakref.WeakValueDictionary = weakref.WeakValueDictionary()
-        user_agent = "Hondana (https://github.com/AbstractUmbra/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
+        user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
 
     async def _generate_session(self) -> aiohttp.ClientSession:

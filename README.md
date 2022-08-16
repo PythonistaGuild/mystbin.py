@@ -3,11 +3,11 @@
     <a href='https://mystbinpy.readthedocs.io/en/latest/?badge=latest'>
         <img src='https://readthedocs.org/projects/mystbinpy/badge/?version=latest' alt='Documentation Status' />
     </a>
-    <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting'>
-        <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main' alt='Linting status' />
+    <a href='https://github.com/PythonistaGuild/mystbin.py/workflows/Code%20Linting'>
+        <img src='https://github.com/PythonistaGuild/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main' alt='Linting status' />
     </a>
-    <a href='https://github.com/AbstractUmbra/mystbin.py/workflows/Build'>
-        <img src='https://github.com/AbstractUmbra/mystbin.py/workflows/Build/badge.svg' alt='Build status' />
+    <a href='https://github.com/PythonistaGuild/mystbin.py/workflows/Build'>
+        <img src='https://github.com/PythonistaGuild/mystbin.py/workflows/Build/badge.svg' alt='Build status' />
     </a>
 </div>
 <br>
@@ -37,7 +37,7 @@ python -m pip install -U mystbin.py[requests]
 
 Installing from source:
 ```shell
-python -m pip install git+https://github.com/AbstractUmbra/mystbin-py.git #[requests] for sync addon
+python -m pip install git+https://github.com/PythonistaGuild/mystbin-py.git #[requests] for sync addon
 ```
 
 ### Usage examples
