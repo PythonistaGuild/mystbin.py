@@ -8,7 +8,7 @@ build:
     post_install:
       - pip install poetry==1.2.0b3
       - poetry config virtualenvs.create false
-      - poetry install --with docs,dev
+      - poetry install --all-extras --with docs,dev
 
 sphinx:
   configuration: docs/conf.py

@@ -29,6 +29,7 @@ from typing import Literal, NamedTuple
 from .client import Client as Client
 from .paste import File as File
 from .paste import Paste as Paste
+from .errors import *
 
 
 class VersionInfo(NamedTuple):
