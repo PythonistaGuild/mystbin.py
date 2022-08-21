@@ -12,8 +12,10 @@
 </div>
 <br>
 
-A small simple wrapper around the [Mystb.in](https://mystb.in/) API.
-API docs can be found [here](https://api.mystb.in/docs).
+A small simple wrapper around the [Mystb.in](https://mystb.in/) API. API docs can be found [here](https://api.mystb.in/docs).
+
+Documentation for this wrapper can be found [here](https://mystbinpy.readthedocs.io/en/stable/).
+If you want the docs for the `main` branch, those can be found [here](https://mystbinpy.readthedocs.io/en/latest/).
 ----------
 ### Features
 
@@ -32,13 +34,11 @@ This project will be on [PyPI](https://pypi.org/project/mystbin.py/) as a stable
 Installing via `pip`:
 ```shell
 python -m pip install -U mystbin.py
-# or for optional sync addon...
-python -m pip install -U mystbin.py[requests]
 ```
 
 Installing from source:
 ```shell
-python -m pip install git+https://github.com/PythonistaGuild/mystbin-py.git #[requests] for sync addon
+python -m pip install git+https://github.com/PythonistaGuild/mystbin.py.git
 ```
 
 ### Usage examples
