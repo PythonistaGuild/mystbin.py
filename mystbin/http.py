@@ -249,9 +249,9 @@ class HTTPClient:
 
         json_: dict[str, Any] = {}
         if file:
-            json_["files"] = [file.to_dict()]
+            json_["files"] = [file._to_dict()]
         elif files:
-            json_["files"] = [f.to_dict() for f in files]
+            json_["files"] = [f._to_dict() for f in files]
 
         if password:
             json_["password"] = password

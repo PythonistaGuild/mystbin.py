@@ -62,7 +62,7 @@ class File:
         self.character_count: int = character_count or len(content)
 
     @classmethod
-    def from_data(cls, payload: FileResponse, /) -> Self:
+    def _from_data(cls, payload: FileResponse, /) -> Self:
         return cls(
             content=payload["content"],
             filename=payload["filename"],
@@ -71,13 +71,35 @@ class File:
             character_count=payload["charcount"],
         )
 
-    def to_dict(self) -> dict[str, Any]:
+    def _to_dict(self) -> dict[str, Any]:
         ret: dict[str, Any] = {"content": self.content, "filename": self.filename, "syntax": self.syntax}
 
         return ret
 
 
 class Paste:
+    """Represents a Paste object from mystb.in.
+
+    Attributes
+    -----------
+    id: :class:`str`
+        The ID of this paste.
+    created_at: :class:`datetime.datetime`
+        When this paste was created in UTC.
+    expires: Optional[:class:`datetime.datetime`]
+        When this paste expires, if at all.
+    last_edited: Optional[:class:`datetime.datetime`]
+        When this paste was last edited, if at all.
+    files: list[:class:`mystbin.File`]
+        The list of files within this Paste.
+    views: Optional[:class:`int`]
+        How many views this paste has had, if any.
+
+
+    .. note::
+        The ``last_edited``, ``expires`` and ``views`` attributes come from the API and are not user provided.
+    """
+
     __slots__ = (
         "id",
         "author_id",
@@ -113,8 +135,8 @@ class Paste:
         return f"<Paste id={self.id!r} files={len(self.files)}>"
 
     @classmethod
-    def from_data(cls, payload: PasteResponse, /) -> Self:
-        files = [File.from_data(data) for data in payload["files"]]
+    def _from_data(cls, payload: PasteResponse, /) -> Self:
+        files = [File._from_data(data) for data in payload["files"]]
         return cls(
             id=payload["id"],
             created_at=payload["created_at"],
