@@ -16,6 +16,7 @@ A small simple wrapper around the [Mystb.in](https://mystb.in/) API. API docs ca
 
 Documentation for this wrapper can be found [here](https://mystbinpy.readthedocs.io/en/stable/).
 If you want the docs for the `main` branch, those can be found [here](https://mystbinpy.readthedocs.io/en/latest/).
+
 ----------
 ### Features
 
