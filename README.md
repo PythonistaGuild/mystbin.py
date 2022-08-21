@@ -18,7 +18,8 @@ API docs can be found [here](https://api.mystb.in/docs).
 ### Features
 
 - [x] - Creating pastes.
-- [x] - Editing pastes.
+- [ ] - Editing pastes.
+    - Pending design work.
 - [x] - Deleting pastes.
 - [x] - Getting pastes.
 - [ ] - User endpoints.
