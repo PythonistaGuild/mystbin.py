@@ -38,6 +38,26 @@ __all__ = (
 
 
 class File:
+    """Represents a single file within a mystb.in paste.
+
+    Attributes
+    -----------
+    filename: :class:`str`
+        The file's name.
+    content: :class:`str`
+        The file's contents.
+    syntax: Optional[:class:`str`]
+        The file's syntax, if given.
+    lines_of_code: Optional[:class:`int`]
+        The lines of code within the file.
+    character_count: Optional[:class:`int`]
+        The character count of the file.
+
+
+    .. note::
+        The ``lines_of_code`` and ``character_count`` come from the API and should not be provided by the user.
+    """
+
     __slots__ = (
         "filename",
         "content",
@@ -58,7 +78,7 @@ class File:
         self.filename: str = filename
         self.content: str = content
         self.syntax: Optional[str] = syntax
-        self.lines_of_code: int = lines_of_code or len(content.split("\n"))
+        self.lines_of_code: int = lines_of_code or content.count("\n")
         self.character_count: int = character_count or len(content)
 
     @classmethod
