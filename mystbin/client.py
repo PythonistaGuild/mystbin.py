@@ -41,6 +41,14 @@ class Client:
     def __init__(self, *, token: Optional[str] = None, session: Optional[aiohttp.ClientSession] = None) -> None:
         self.http: HTTPClient = HTTPClient(token=token, session=session)
 
+    async def close(self) -> None:
+        """|coro|
+
+        Closes the internal HTTP session and this client.
+        """
+        if self.http.__session:
+            await self.http.__session.close()
+
     async def create_paste(
         self,
         *,
