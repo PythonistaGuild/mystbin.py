@@ -5,8 +5,8 @@ description = "A small simple wrapper around the mystb.in API."
 authors = ["AbstractUmbra <Umbra@AbstractUmbra.dev>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/PythonistaGuild/mystbin-py"
-repository = "https://github.com/PythonistaGuild/mystbin-py"
+homepage = "https://github.com/PythonistaGuild/mystbin.py"
+repository = "https://github.com/PythonistaGuild/mystbin.py"
 keywords = ["mystbin",  "paste"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
