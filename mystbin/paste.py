@@ -46,8 +46,6 @@ class File:
         The file's name.
     content: :class:`str`
         The file's contents.
-    syntax: Optional[:class:`str`]
-        The file's syntax, if given.
     lines_of_code: Optional[:class:`int`]
         The lines of code within the file.
     character_count: Optional[:class:`int`]
@@ -71,13 +69,11 @@ class File:
         *,
         filename: str,
         content: str,
-        syntax: Optional[str],
         lines_of_code: Optional[int] = None,
         character_count: Optional[int] = None,
     ) -> None:
         self.filename: str = filename
         self.content: str = content
-        self.syntax: Optional[str] = syntax
         self.lines_of_code: int = lines_of_code or content.count("\n")
         self.character_count: int = character_count or len(content)
 
@@ -86,7 +82,6 @@ class File:
         return cls(
             content=payload["content"],
             filename=payload["filename"],
-            syntax=payload["filename"].rsplit(".")[-1],
             lines_of_code=payload["loc"],
             character_count=payload["charcount"],
         )

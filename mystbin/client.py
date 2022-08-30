@@ -54,7 +54,6 @@ class Client:
         *,
         filename: str,
         content: str,
-        syntax: Optional[str] = None,
         password: Optional[str] = None,
         expires: Optional[datetime.datetime] = None,
     ) -> Paste:
@@ -68,8 +67,6 @@ class Client:
             The filename to create.
         content: :class:`str`
             The content of the file you are creating.
-        syntax: Optional[:class:`str`]
-            The syntax of the file to create, if any.
         password: Optional[:class:`str`]
             The password of the paste, if any.
         expires: Optional[:class:`datetime.datetime`]
@@ -80,7 +77,7 @@ class Client:
         :class:`mystbin.Paste`
             The paste that was created.
         """
-        file = File(filename=filename, content=content, syntax=syntax)
+        file = File(filename=filename, content=content)
         data = await self.http._create_paste(file=file, password=password, expires=expires)
         return Paste._from_data(data)
 
