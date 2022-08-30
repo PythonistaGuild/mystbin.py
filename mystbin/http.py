@@ -128,7 +128,7 @@ class Route:
 
 class HTTPClient:
     __slots__ = (
-        "__session",
+        "_session",
         "_async",
         "_token",
         "_locks",
@@ -137,18 +137,18 @@ class HTTPClient:
 
     def __init__(self, *, token: Optional[str], session: Optional[aiohttp.ClientSession] = None) -> None:
         self._token: Optional[str] = token
-        self.__session: Optional[aiohttp.ClientSession] = session
+        self._session: Optional[aiohttp.ClientSession] = session
         self._locks: weakref.WeakValueDictionary = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
 
     async def _generate_session(self) -> aiohttp.ClientSession:
-        self.__session = aiohttp.ClientSession()
-        return self.__session
+        self._session = aiohttp.ClientSession()
+        return self._session
 
     async def request(self, route: Route, **kwargs: Any) -> Any:
-        if self.__session is None:
-            self.__session = await self._generate_session()
+        if self._session is None:
+            self._session = await self._generate_session()
 
         bucket = route.path
         lock = self._locks.get(bucket)
@@ -177,7 +177,7 @@ class HTTPClient:
         with MaybeUnlock(lock) as maybe_lock:
             for tries in range(5):
                 try:
-                    async with self.__session.request(route.verb, route.url, **kwargs) as response:
+                    async with self._session.request(route.verb, route.url, **kwargs) as response:
                         # Requests remaining before ratelimit
                         remaining = response.headers.get("x-ratelimit-remaining", None)
                         LOGGER.debug("remaining is: %s", remaining)

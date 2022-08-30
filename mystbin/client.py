@@ -46,8 +46,8 @@ class Client:
 
         Closes the internal HTTP session and this client.
         """
-        if self.http.__session:
-            await self.http.__session.close()
+        if self.http._session:
+            await self.http._session.close()
 
     async def create_paste(
         self,
