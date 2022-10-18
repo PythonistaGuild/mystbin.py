@@ -22,7 +22,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-__version__ = "5.0.2"
+__version__ = "5.0.3"
 
 from typing import Literal, NamedTuple
 
@@ -40,4 +40,4 @@ class VersionInfo(NamedTuple):
     serial: int
 
 
-version_info: VersionInfo = VersionInfo(major=5, minor=0, micro=2, releaselevel="final", serial=0)
+version_info: VersionInfo = VersionInfo(major=5, minor=0, micro=3, releaselevel="final", serial=0)
