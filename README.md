@@ -51,7 +51,7 @@ import mystbin
 
 mystbin_client = mystbin.Client()
 
-paste = await client.create_paste(filename="Hello.txt", content="Hello there!", syntax="txt")
+paste = await client.create_paste(filename="Hello.txt", content="Hello there!")
 str(paste)
 >>> 'https://mystb.in/<your generated ID>'
 
@@ -67,8 +67,8 @@ Or if you want to create a paste with multiple files...
 ```py
 import mystbin
 
-file = mystbin.File(filename="File1.txt", content="Hello there!", syntax="txt")
-file2 = mystbin.File(filename="test.py", content="print('hello!')", syntax="py")
+file = mystbin.File(filename="File1.txt", content="Hello there!")
+file2 = mystbin.File(filename="test.py", content="print('hello!')")
 
 paste = await client.create_multifile_paste(files=[file, file2])
 

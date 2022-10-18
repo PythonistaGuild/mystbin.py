@@ -59,7 +59,6 @@ class File:
     __slots__ = (
         "filename",
         "content",
-        "syntax",
         "lines_of_code",
         "character_count",
     )
@@ -87,7 +86,7 @@ class File:
         )
 
     def _to_dict(self) -> dict[str, Any]:
-        ret: dict[str, Any] = {"content": self.content, "filename": self.filename, "syntax": self.syntax}
+        ret: dict[str, Any] = {"content": self.content, "filename": self.filename}
 
         return ret
 
@@ -144,10 +143,14 @@ class Paste:
         self.views: Optional[int] = views
 
     def __str__(self) -> str:
-        return f"https://mystb.in/{self.id}"
+        return self.url
 
     def __repr__(self) -> str:
         return f"<Paste id={self.id!r} files={len(self.files)}>"
+
+    @property
+    def url(self) -> str:
+        return f"https://mystb.in/{self.id}"
 
     @classmethod
     def _from_data(cls, payload: PasteResponse, /) -> Self:

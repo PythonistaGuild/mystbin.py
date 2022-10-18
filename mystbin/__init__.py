@@ -27,9 +27,9 @@ __version__ = "5.0.2"
 from typing import Literal, NamedTuple
 
 from .client import Client as Client
+from .errors import *
 from .paste import File as File
 from .paste import Paste as Paste
-from .errors import *
 
 
 class VersionInfo(NamedTuple):
