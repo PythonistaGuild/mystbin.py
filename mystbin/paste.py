@@ -38,6 +38,9 @@ __all__ = (
 
 
 class File:
+    _lines_of_code: int
+    _character_count: int
+
     """Represents a single file within a mystb.in paste.
 
     Attributes
@@ -46,21 +49,13 @@ class File:
         The file's name.
     content: :class:`str`
         The file's contents.
-    lines_of_code: Optional[:class:`int`]
-        The lines of code within the file.
-    character_count: Optional[:class:`int`]
-        The character count of the file.
-
-
-    .. note::
-        The ``lines_of_code`` and ``character_count`` come from the API and should not be provided by the user.
     """
 
     __slots__ = (
         "filename",
         "content",
-        "lines_of_code",
-        "character_count",
+        "_lines_of_code",
+        "_character_count",
     )
 
     def __init__(
@@ -68,22 +63,28 @@ class File:
         *,
         filename: str,
         content: str,
-        lines_of_code: Optional[int] = None,
-        character_count: Optional[int] = None,
     ) -> None:
         self.filename: str = filename
         self.content: str = content
-        self.lines_of_code: int = lines_of_code or content.count("\n")
-        self.character_count: int = character_count or len(content)
+
+    @property
+    def lines_of_code(self) -> int:
+        return self._lines_of_code
+
+    @property
+    def character_count(self) -> int:
+        return self._character_count
 
     @classmethod
     def _from_data(cls, payload: FileResponse, /) -> Self:
-        return cls(
+        self = cls(
             content=payload["content"],
             filename=payload["filename"],
-            lines_of_code=payload["loc"],
-            character_count=payload["charcount"],
         )
+        self._lines_of_code = payload["loc"]
+        self._character_count = payload["charcount"]
+
+        return self
 
     def _to_dict(self) -> dict[str, Any]:
         ret: dict[str, Any] = {"content": self.content, "filename": self.filename}
@@ -92,6 +93,10 @@ class File:
 
 
 class Paste:
+    _last_edited: Optional[datetime.datetime]
+    _expires: Optional[datetime.datetime]
+    _views: Optional[int]
+
     """Represents a Paste object from mystb.in.
 
     Attributes
@@ -100,29 +105,19 @@ class Paste:
         The ID of this paste.
     created_at: :class:`datetime.datetime`
         When this paste was created in UTC.
-    expires: Optional[:class:`datetime.datetime`]
-        When this paste expires, if at all.
-    last_edited: Optional[:class:`datetime.datetime`]
-        When this paste was last edited, if at all.
     files: list[:class:`mystbin.File`]
         The list of files within this Paste.
-    views: Optional[:class:`int`]
-        How many views this paste has had, if any.
-
-
-    .. note::
-        The ``last_edited``, ``expires`` and ``views`` attributes come from the API and are not user provided.
     """
 
     __slots__ = (
         "id",
         "author_id",
         "created_at",
-        "expires",
         "files",
         "notice",
-        "views",
-        "last_edited",
+        "_expires",
+        "_views",
+        "_last_edited",
     )
 
     def __init__(
@@ -130,17 +125,11 @@ class Paste:
         *,
         id: str,
         created_at: str,
-        expires: Optional[str] = None,
-        last_edited: Optional[str] = None,
         files: list[File],
-        views: Optional[int] = None,
     ) -> None:
         self.id: str = id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)
-        self.expires: Optional[datetime.datetime] = datetime.datetime.fromisoformat(expires) if expires else None
-        self.last_edited: Optional[datetime.datetime] = datetime.datetime.fromisoformat(last_edited) if last_edited else None
         self.files: list[File] = files
-        self.views: Optional[int] = views
 
     def __str__(self) -> str:
         return self.url
@@ -152,14 +141,37 @@ class Paste:
     def url(self) -> str:
         return f"https://mystb.in/{self.id}"
 
+    @property
+    def last_edited(self) -> Optional[datetime.datetime]:
+        return self._last_edited
+
+    @property
+    def expires(self) -> Optional[datetime.datetime]:
+        return self._expires
+
+    @property
+    def views(self) -> Optional[int]:
+        return self._views
+
     @classmethod
     def _from_data(cls, payload: PasteResponse, /) -> Self:
         files = [File._from_data(data) for data in payload["files"]]
-        return cls(
+        self = cls(
             id=payload["id"],
             created_at=payload["created_at"],
-            expires=payload["expires"],
             files=files,
-            views=payload.get("views"),
-            last_edited=payload.get("last_edited"),
         )
+        self._views = payload.get("views")
+        last_edited = payload.get("last_edited")
+        if last_edited:
+            self._last_edited = datetime.datetime.fromisoformat(last_edited)
+        else:
+            self._last_edited = None
+
+        expires = payload.get("expires")
+        if expires:
+            self._expires = datetime.datetime.fromisoformat(expires)
+        else:
+            self._expires = None
+
+        return self
