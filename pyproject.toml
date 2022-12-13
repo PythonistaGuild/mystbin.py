@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mystbin-py"
-version = "5.0.3"
+version = "5.1.0"
 description = "A small simple wrapper around the mystb.in API."
 authors = ["AbstractUmbra <Umbra@AbstractUmbra.dev>"]
 license = "MIT"
@@ -59,16 +59,24 @@ lines_after_imports = 2
 
 [tool.pyright]
 ignore = ["docs/conf.py"]
+include = ["mystbin/**/*.py"]
 useLibraryCodeForTypes = true
 typeCheckingMode = "basic"
 pythonVersion = "3.9"
 strictListInference = true
 strictDictionaryInference = true
 strictSetInference = true
+strictParameterNoneValue = true
 reportMissingImports = "error"
 reportUnusedImport = "error"
 reportUnusedClass = "error"
 reportUnusedFunction = "error"
+reportUnusedVariable = "error"
+reportUnusedExpression = "error"
+reportGeneralTypeIssues = "error"
+reportDuplicateImport = "error"
+reportUntypedFunctionDecorator = "error"
+reportUnnecessaryTypeIgnoreComment = "warning"
 
 [build-system]
 requires = ["poetry>=1.0"]
