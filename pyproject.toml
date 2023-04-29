@@ -31,15 +31,17 @@ packages = [
 "Issue Tracker" = "https://github.com/PythonistaGuild/mystbin.py/issues"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 aiohttp = "^3.7.4"
 requests = {version = "^2.24.0", optional = true}
 sphinx = { version = "^4.0.0", optional = true }
 sphinxcontrib-trio = { version = "*", optional = true }
 furo = { version = "*", optional = true }
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "*"
+isort = "*"
+ruff = "*"
 
 [tool.poetry.extras]
 requests = ["requests"]
@@ -48,9 +50,15 @@ docs = ["sphinx", "sphinxcontrib-trio", "furo"]
 [tool.poetry.scripts]
 version = 'mystbin.__main__:show_version'
 
+[tool.ruff]
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+unfixable = []
+line-length = 125
+target-version = "py311"
+
 [tool.black]
 line-length = 125
-target-version = ["py39"]
+target-version = "py311"
 
 [tool.isort]
 profile = "black"
@@ -61,22 +69,8 @@ lines_after_imports = 2
 ignore = ["docs/conf.py"]
 include = ["mystbin/**/*.py"]
 useLibraryCodeForTypes = true
-typeCheckingMode = "basic"
-pythonVersion = "3.9"
-strictListInference = true
-strictDictionaryInference = true
-strictSetInference = true
-strictParameterNoneValue = true
-reportMissingImports = "error"
-reportUnusedImport = "error"
-reportUnusedClass = "error"
-reportUnusedFunction = "error"
-reportUnusedVariable = "error"
-reportUnusedExpression = "error"
-reportGeneralTypeIssues = "error"
-reportDuplicateImport = "error"
-reportUntypedFunctionDecorator = "error"
-reportUnnecessaryTypeIgnoreComment = "warning"
+typeCheckingMode = "strict"
+pythonVersion = "3.11"
 
 [build-system]
 requires = ["poetry>=1.0"]
