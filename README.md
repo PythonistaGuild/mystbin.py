@@ -49,13 +49,13 @@ Since the project is considered multi-sync, it will work in a sync/async environ
 # async example - it will default to async
 import mystbin
 
-mystbin_client = mystbin.Client()
+client = mystbin.Client()
 
 paste = await client.create_paste(filename="Hello.txt", content="Hello there!")
 str(paste)
 >>> 'https://mystb.in/<your generated ID>'
 
-get_paste = await mystbin_client.get_paste("<your generated ID>")
+get_paste = await client.get_paste("<your generated ID>")
 get_paste.files[0].content
 >>> "Hello there!"
 
