@@ -46,8 +46,7 @@ class Client:
 
         Closes the internal HTTP session and this client.
         """
-        if self.http._session:
-            await self.http._session.close()
+        await self.http.close()
 
     async def create_paste(
         self,
@@ -78,8 +77,8 @@ class Client:
             The paste that was created.
         """
         file = File(filename=filename, content=content)
-        data = await self.http._create_paste(file=file, password=password, expires=expires)
-        return Paste._from_data(data)
+        data = await self.http.create_paste(file=file, password=password, expires=expires)
+        return Paste.from_data(data)
 
     async def create_multifile_paste(
         self, *, files: list[File], password: Optional[str] = None, expires: Optional[datetime.datetime] = None
@@ -102,8 +101,8 @@ class Client:
         :class:`mystbin.Paste`
             The paste that was created.
         """
-        data = await self.http._create_paste(files=files, password=password, expires=expires)
-        return Paste._from_data(data)
+        data = await self.http.create_paste(files=files, password=password, expires=expires)
+        return Paste.from_data(data)
 
     @require_authentication
     async def delete_paste(self, paste_id: str, /) -> None:
@@ -116,7 +115,7 @@ class Client:
         paste_id: :class:`str`
             The paste to delete.
         """
-        await self.http._delete_pastes(paste_ids=[paste_id])
+        await self.http.delete_pastes(paste_ids=[paste_id])
 
     @require_authentication
     async def delete_pastes(self, paste_ids: list[str], /) -> None:
@@ -129,7 +128,7 @@ class Client:
         paste_ids: list[:class:`str`]
             The pastes to delete.
         """
-        await self.http._delete_pastes(paste_ids=paste_ids)
+        await self.http.delete_pastes(paste_ids=paste_ids)
 
     async def get_paste(self, paste_id: str, *, password: Optional[str] = None) -> Paste:
         """|coro|
@@ -143,8 +142,8 @@ class Client:
         password: Optional[:class:`str`]
             The password of the paste, if any.
         """
-        data = await self.http._get_paste(paste_id=paste_id, password=password)
-        return Paste._from_data(data)
+        data = await self.http.get_paste(paste_id=paste_id, password=password)
+        return Paste.from_data(data)
 
     # @overload
     # async def edit_paste(self, paste_id: str, *, new_content: str, new_filename: ..., new_expires: ...) -> None:
@@ -209,6 +208,6 @@ class Client:
         list[:class:`Paste`]
             The pastes that were fetched.
         """
-        data = await self.http._get_my_pastes(limit=limit)
+        data = await self.http.get_my_pastes(limit=limit)
 
-        return [Paste._from_data(x) for x in data]
+        return [Paste.from_data(x) for x in data]

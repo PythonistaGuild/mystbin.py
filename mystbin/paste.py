@@ -76,7 +76,7 @@ class File:
         return self._character_count
 
     @classmethod
-    def _from_data(cls, payload: FileResponse, /) -> Self:
+    def from_data(cls, payload: FileResponse, /) -> Self:
         self = cls(
             content=payload["content"],
             filename=payload["filename"],
@@ -86,7 +86,7 @@ class File:
 
         return self
 
-    def _to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         ret: dict[str, Any] = {"content": self.content, "filename": self.filename}
 
         return ret
@@ -154,8 +154,8 @@ class Paste:
         return self._views
 
     @classmethod
-    def _from_data(cls, payload: PasteResponse, /) -> Self:
-        files = [File._from_data(data) for data in payload["files"]]
+    def from_data(cls, payload: PasteResponse, /) -> Self:
+        files = [File.from_data(data) for data in payload["files"]]
         self = cls(
             id=payload["id"],
             created_at=payload["created_at"],

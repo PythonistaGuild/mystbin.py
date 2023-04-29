@@ -40,7 +40,7 @@ __all__ = ("MISSING", "require_authentication")
 class _MissingSentinel:
     __slots__ = ()
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         return False
 
     def __bool__(self) -> bool:
@@ -49,7 +49,7 @@ class _MissingSentinel:
     def __hash__(self) -> int:
         return 0
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "..."
 
 

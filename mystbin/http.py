@@ -138,9 +138,13 @@ class HTTPClient:
     def __init__(self, *, token: Optional[str], session: Optional[aiohttp.ClientSession] = None) -> None:
         self._token: Optional[str] = token
         self._session: Optional[aiohttp.ClientSession] = session
-        self._locks: weakref.WeakValueDictionary = weakref.WeakValueDictionary()
+        self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
+
+    async def close(self) -> None:
+        if self._session:
+            await self._session.close()
 
     async def _generate_session(self) -> aiohttp.ClientSession:
         self._session = aiohttp.ClientSession()
@@ -237,7 +241,7 @@ class HTTPClient:
 
             raise RuntimeError("Unreachable code in HTTP handling.")
 
-    def _create_paste(
+    def create_paste(
         self,
         *,
         file: Optional[File] = None,
@@ -249,9 +253,9 @@ class HTTPClient:
 
         json_: dict[str, Any] = {}
         if file:
-            json_["files"] = [file._to_dict()]
+            json_["files"] = [file.to_dict()]
         elif files:
-            json_["files"] = [f._to_dict() for f in files]
+            json_["files"] = [f.to_dict() for f in files]
 
         if password:
             json_["password"] = password
@@ -260,21 +264,21 @@ class HTTPClient:
 
         return self.request(route=route, json=json_)
 
-    def _delete_paste(self, *, paste_id: str) -> Response[None]:
-        return self._delete_pastes(paste_ids=[paste_id])
+    def delete_paste(self, *, paste_id: str) -> Response[None]:
+        return self.delete_pastes(paste_ids=[paste_id])
 
-    def _delete_pastes(self, *, paste_ids: list[str]) -> Response[None]:
+    def delete_pastes(self, *, paste_ids: list[str]) -> Response[None]:
         route = Route("DELETE", "/paste")
         return self.request(route=route, json={"pastes": paste_ids})
 
-    def _get_paste(self, *, paste_id: str, password: Optional[str]) -> Response[PasteResponse]:
+    def get_paste(self, *, paste_id: str, password: Optional[str]) -> Response[PasteResponse]:
         route = Route("GET", "/paste/{paste_id}", paste_id=paste_id)
 
         if password:
             return self.request(route=route, params={"password": password})
         return self.request(route=route)
 
-    def _edit_paste(
+    def edit_paste(
         self,
         paste_id: str,
         *,
@@ -297,7 +301,7 @@ class HTTPClient:
 
         return self.request(route, json=json_)
 
-    def _get_my_pastes(self, *, limit: int) -> Response[list[PasteResponse]]:
+    def get_my_pastes(self, *, limit: int) -> Response[list[PasteResponse]]:
         route = Route("GET", "/pastes/@me")
 
         return self.request(route, params={limit: limit})
