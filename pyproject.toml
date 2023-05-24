@@ -41,7 +41,6 @@ furo = { version = "*", optional = true }
 [tool.poetry.group.dev.dependencies]
 black = "*"
 isort = "*"
-ruff = "*"
 
 [tool.poetry.extras]
 requests = ["requests"]
