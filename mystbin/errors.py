@@ -21,6 +21,7 @@ DEALINGS IN THE SOFTWARE.
 """
 import aiohttp
 
+
 __all__ = (
     "APIException",
     "AuthenticationRequired",

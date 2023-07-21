@@ -49,15 +49,9 @@ docs = ["sphinx", "sphinxcontrib-trio", "furo"]
 [tool.poetry.scripts]
 version = 'mystbin.__main__:show_version'
 
-[tool.ruff]
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = []
-line-length = 125
-target-version = "py311"
-
 [tool.black]
 line-length = 125
-target-version = "py311"
+target-version = ["py311"]
 
 [tool.isort]
 profile = "black"
