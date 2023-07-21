@@ -32,19 +32,32 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-aiohttp = "^3.7.4"
+aiohttp = [
+    { version = "^3.8" },
+    { version = "^3.8", markers = "extra == 'speed'", extras= ["speedups"]},
+]
 requests = {version = "^2.24.0", optional = true}
+
 sphinx = { version = "^4.0.0", optional = true }
 sphinxcontrib-trio = { version = "*", optional = true }
 furo = { version = "*", optional = true }
 
+[tool.poetry.extras]
+speed = ["aiohttp"]
+requests = ["requests"]
+docs = ["sphinx", "sphinxcontrib-trio", "furo"]
+
+[tool.poetry.group.speedups.dependencies]
+aiohttp = { version = "^3.8", extras = ["speedups"] }
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "*"
+sphinxcontrib-trio = "*"
+furo = "*"
+
 [tool.poetry.group.dev.dependencies]
 black = "*"
 isort = "*"
-
-[tool.poetry.extras]
-requests = ["requests"]
-docs = ["sphinx", "sphinxcontrib-trio", "furo"]
 
 [tool.poetry.scripts]
 version = 'mystbin.__main__:show_version'
