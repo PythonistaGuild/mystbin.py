@@ -3,10 +3,10 @@
     <a href='https://mystbinpy.readthedocs.io/en/latest/?badge=latest'>
         <img src='https://readthedocs.org/projects/mystbinpy/badge/?version=latest' alt='Documentation Status' />
     </a>
-    <a href='https://github.com/PythonistaGuild/mystbin.py/workflows/Code%20Linting'>
-        <img src='https://github.com/PythonistaGuild/mystbin.py/workflows/Code%20Linting/badge.svg?branch=main' alt='Linting status' />
+    <a href='https://github.com/PythonistaGuild/mystbin.py/actions/workflows/coverage_and_lint.yaml'>
+        <img src='https://github.com/PythonistaGuild/mystbin.py/workflows/Type%20Coverage%20and%20Linting/badge.svg?branch=main' alt='Linting status' />
     </a>
-    <a href='https://github.com/PythonistaGuild/mystbin.py/workflows/Build'>
+    <a href='https://github.com/PythonistaGuild/mystbin.py/actions/workflows/build.yaml'>
         <img src='https://github.com/PythonistaGuild/mystbin.py/workflows/Build/badge.svg' alt='Build status' />
     </a>
 </div>
