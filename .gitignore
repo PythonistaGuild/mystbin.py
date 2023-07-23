@@ -3,3 +3,4 @@
 .venv/
 .idea/
 docs/build
+dist/
