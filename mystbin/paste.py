@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 
 if TYPE_CHECKING:
@@ -86,8 +86,8 @@ class File:
 
         return self
 
-    def to_dict(self) -> dict[str, Any]:
-        ret: dict[str, Any] = {"content": self.content, "filename": self.filename}
+    def to_dict(self) -> Dict[str, Any]:
+        ret: Dict[str, Any] = {"content": self.content, "filename": self.filename}
 
         return ret
 
@@ -105,7 +105,7 @@ class Paste:
         The ID of this paste.
     created_at: :class:`datetime.datetime`
         When this paste was created in UTC.
-    files: list[:class:`mystbin.File`]
+    files: List[:class:`mystbin.File`]
         The list of files within this Paste.
     """
 
@@ -125,7 +125,7 @@ class Paste:
         *,
         id: str,
         created_at: str,
-        files: list[File],
+        files: List[File],
     ) -> None:
         self.id: str = id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)

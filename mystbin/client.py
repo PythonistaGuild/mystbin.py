@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import datetime
-from typing import Optional
+from typing import List, Optional, Sequence, overload
 
 import aiohttp
 
@@ -48,11 +48,52 @@ class Client:
         """
         await self.http.close()
 
+    @overload
     async def create_paste(
         self,
         *,
         filename: str,
         content: str,
+        file: None = ...,
+        files: None = ...,
+        password: Optional[str] = ...,
+        expires: Optional[datetime.datetime] = ...,
+    ) -> Paste:
+        ...
+
+    @overload
+    async def create_paste(
+        self,
+        *,
+        filename: None = ...,
+        content: None = ...,
+        file: File,
+        files: None = ...,
+        password: Optional[str] = ...,
+        expires: Optional[datetime.datetime] = ...,
+    ) -> Paste:
+        ...
+
+    @overload
+    async def create_paste(
+        self,
+        *,
+        filename: None = ...,
+        content: None = ...,
+        file: None = ...,
+        files: Sequence[File],
+        password: Optional[str] = ...,
+        expires: Optional[datetime.datetime] = ...,
+    ) -> Paste:
+        ...
+
+    async def create_paste(
+        self,
+        *,
+        filename: Optional[str] = None,
+        content: Optional[str] = None,
+        file: Optional[File] = None,
+        files: Optional[Sequence[File]] = None,
         password: Optional[str] = None,
         expires: Optional[datetime.datetime] = None,
     ) -> Paste:
@@ -62,46 +103,49 @@ class Client:
 
         Parameters
         -----------
-        filename: :class:`str`
+        filename: Optional[:class:`str`]
             The filename to create.
-        content: :class:`str`
+        content: Optional[:class:`str`]
             The content of the file you are creating.
+        file: Optional[:class:`~mystbin.File`]
+            The pre-created file you wish to upload.
+        files: Optional[List[:class:`~mystbin.File`]]
+            The pre-creates list of files you wish to upload.
         password: Optional[:class:`str`]
             The password of the paste, if any.
         expires: Optional[:class:`datetime.datetime`]
             When the paste expires, if any.
 
-        Returns
-        --------
-        :class:`mystbin.Paste`
-            The paste that was created.
-        """
-        file = File(filename=filename, content=content)
-        data = await self.http.create_paste(file=file, password=password, expires=expires)
-        return Paste.from_data(data)
-
-    async def create_multifile_paste(
-        self, *, files: list[File], password: Optional[str] = None, expires: Optional[datetime.datetime] = None
-    ) -> Paste:
-        """|coro|
-
-        Create a paste with multiple files on mystb.in.
-
-        Parameters
-        ------------
-        files: list[:class:`mystbin.File`]
-            A list of files to create on mystbin.
-        password: Optional[:class:`str`]
-            The password for this paste, if any.
-        expires: Optional[:class:`datetime.datetime`]
-            When this paste expires, if any.
+        Raises
+        -------
+        :exc:`ValueError`
+            A bad combinarion of singular and plural pastes were passed.
 
         Returns
         --------
         :class:`mystbin.Paste`
             The paste that was created.
+
+
+        ..note::
+            Passing combinations of both singular and plural files is not supports and will raise an exception.
+            Internally the order of precesence is ``files`` > ``file`` > ``filename and content``.
         """
-        data = await self.http.create_paste(files=files, password=password, expires=expires)
+        if (filename and content) and file:
+            raise ValueError("Cannot provide both `file` and `filename`/`content`")
+
+        resolved_files: Sequence[File] = []
+        if filename and content:
+            resolved_files = [File(filename=filename, content=content)]
+        elif file:
+            resolved_files = [file]
+
+        if resolved_files and files:
+            raise ValueError("Cannot provide both singular and plural files.")
+
+        resolved_files = files or resolved_files
+
+        data = await self.http.create_paste(files=resolved_files, password=password, expires=expires)
         return Paste.from_data(data)
 
     @require_authentication
@@ -118,14 +162,14 @@ class Client:
         await self.http.delete_pastes(paste_ids=[paste_id])
 
     @require_authentication
-    async def delete_pastes(self, paste_ids: list[str], /) -> None:
+    async def delete_pastes(self, paste_ids: List[str], /) -> None:
         """|coro|
 
         Delete multiple pastes.
 
         Parameters
         -----------
-        paste_ids: list[:class:`str`]
+        paste_ids: List[:class:`str`]
             The pastes to delete.
         """
         await self.http.delete_pastes(paste_ids=paste_ids)
@@ -145,55 +189,8 @@ class Client:
         data = await self.http.get_paste(paste_id=paste_id, password=password)
         return Paste.from_data(data)
 
-    # @overload
-    # async def edit_paste(self, paste_id: str, *, new_content: str, new_filename: ..., new_expires: ...) -> None:
-    #     ...
-
-    # @overload
-    # async def edit_paste(self, paste_id: str, *, new_content: ..., new_filename: str, new_expires: ...) -> None:
-    #     ...
-
-    # @overload
-    # async def edit_paste(
-    #     self, paste_id: str, *, new_content: ..., new_filename: ..., new_expires: datetime.datetime
-    # ) -> None:
-    #     ...
-
-    # @overload
-    # async def edit_paste(self, paste_id: str, *, new_content: str, new_filename: str, new_expires: ...) -> None:
-    #     ...
-
-    # @overload
-    # async def edit_paste(
-    #     self, paste_id: str, *, new_content: str, new_filename: ..., new_expires: datetime.datetime
-    # ) -> None:
-    #     ...
-
-    # @overload
-    # async def edit_paste(
-    #     self, paste_id: str, *, new_content: ..., new_filename: str, new_expires: datetime.datetime
-    # ) -> None:
-    #     ...
-
-    # @overload
-    # async def edit_paste(
-    #     self, paste_id: str, *, new_content: str, new_filename: str, new_expires: datetime.datetime
-    # ) -> None:
-    #     ...
-
-    # @require_authentication
-    # async def edit_paste(
-    #     self,
-    #     paste_id: str,
-    #     *,
-    #     new_content: Optional[str] = MISSING,
-    #     new_filename: Optional[str] = MISSING,
-    #     new_expires: Optional[datetime.datetime] = MISSING,
-    # ) -> None:
-    #     await self.http._edit_paste(paste_id, new_content=new_content, new_filename=new_filename, new_expires=new_expires)
-
     @require_authentication
-    async def get_user_pastes(self, *, limit: int = 100) -> list[Paste]:
+    async def get_user_pastes(self, *, limit: int = 100) -> List[Paste]:
         """|coro|
 
         Get all pastes belonging to the current authenticated user.
@@ -205,7 +202,7 @@ class Client:
 
         Returns
         --------
-        list[:class:`Paste`]
+        List[:class:`Paste`]
             The pastes that were fetched.
         """
         data = await self.http.get_my_pastes(limit=limit)

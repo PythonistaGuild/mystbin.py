@@ -13,6 +13,7 @@
 import os
 import re
 import sys
+from typing import Dict, List, Tuple
 
 
 # from typing import Literal, Optional
@@ -65,7 +66,7 @@ release = version
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.append(os.path.abspath("extensions"))
 
-extensions: list[str] = [
+extensions: List[str] = [
     "sphinx.ext.autodoc",
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
@@ -74,10 +75,10 @@ extensions: list[str] = [
     "sphinxcontrib_trio",
 ]
 
-extlinks: dict[str, tuple[str, str]] = {"issue": (f"{_GITHUB}/issues/%s", "GH-%s")}
+extlinks: Dict[str, Tuple[str, str]] = {"issue": (f"{_GITHUB}/issues/%s", "GH-%s")}
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path: list[str] = ["_templates"]
+templates_path: List[str] = ["_templates"]
 
 autodoc_typehints: str = "both"
 autodoc_typehints_format: str = "short"
@@ -90,10 +91,10 @@ napoleon_use_admonition_for_notes: bool = True
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns: list[str] = ["build", "Thumbs.db", ".DS_Store"]
+exclude_patterns: List[str] = ["build", "Thumbs.db", ".DS_Store"]
 
 # Links used for cross-referencing other documentation
-intersphinx_mapping: dict[str, tuple[str, None]] = {
+intersphinx_mapping: Dict[str, Tuple[str, None]] = {
     "python": ("https://docs.python.org/3", None),
     "aiohttp": ("https://docs.aiohttp.org/en/stable/", None),
     "requests": ("https://requests.readthedocs.io/en/latest/", None),
@@ -113,7 +114,7 @@ rst_prolog: str = """
 # a list of builtin themes.
 #
 html_theme: str = "furo"
-html_theme_options: dict[str, list[dict[str, str]]] = {
+html_theme_options: Dict[str, List[Dict[str, str]]] = {
     "footer_icons": [
         {"name": "Discord", "url": _DISCORD, "html": _DISCORD_SVG, "class": ""},
         {"name": "Github", "url": _GITHUB, "html": _GITHUB_SVG, "class": ""},
@@ -121,7 +122,7 @@ html_theme_options: dict[str, list[dict[str, str]]] = {
     ],
 }
 
-resource_links: dict[str, str] = {
+resource_links: Dict[str, str] = {
     "github": _GITHUB,
     "issues": f"{_GITHUB}/issues",
     "discussions": f"{_GITHUB}/discussions",

@@ -33,8 +33,10 @@ from typing import (
     Any,
     ClassVar,
     Coroutine,
+    Dict,
     Literal,
     Optional,
+    Sequence,
     Type,
     TypeVar,
     Union,
@@ -59,7 +61,7 @@ if TYPE_CHECKING:
     BE = TypeVar("BE", bound=BaseException)
     from .types.responses import EditPasteResponse, PasteResponse
 
-HTTPVerb = Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
+SupportedHTTPVerb = Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -72,7 +74,7 @@ def _clean_dt(dt: datetime.datetime) -> str:
     return dt.isoformat()
 
 
-async def json_or_text(response: aiohttp.ClientResponse, /) -> Union[dict[str, Any], str]:
+async def json_or_text(response: aiohttp.ClientResponse, /) -> Union[Dict[str, Any], str]:
     """A quick method to parse a `aiohttp.ClientResponse` and test if it's json or text."""
     text = await response.text(encoding="utf-8")
     try:
@@ -117,8 +119,8 @@ class Route:
 
     API_BASE: ClassVar[str] = "https://api.mystb.in"
 
-    def __init__(self, verb: HTTPVerb, path: str, **params: Any) -> None:
-        self.verb: HTTPVerb = verb
+    def __init__(self, verb: SupportedHTTPVerb, path: str, **params: Any) -> None:
+        self.verb: SupportedHTTPVerb = verb
         self.path: str = path
         url = self.API_BASE + path
         if params:
@@ -245,13 +247,13 @@ class HTTPClient:
         self,
         *,
         file: Optional[File] = None,
-        files: Optional[list[File]] = None,
+        files: Optional[Sequence[File]] = None,
         password: Optional[str],
         expires: Optional[datetime.datetime],
     ) -> Response[PasteResponse]:
         route = Route("PUT", "/paste")
 
-        json_: dict[str, Any] = {}
+        json_: Dict[str, Any] = {}
         if file:
             json_["files"] = [file.to_dict()]
         elif files:
@@ -267,7 +269,7 @@ class HTTPClient:
     def delete_paste(self, *, paste_id: str) -> Response[None]:
         return self.delete_pastes(paste_ids=[paste_id])
 
-    def delete_pastes(self, *, paste_ids: list[str]) -> Response[None]:
+    def delete_pastes(self, *, paste_ids: Sequence[str]) -> Response[None]:
         route = Route("DELETE", "/paste")
         return self.request(route=route, json={"pastes": paste_ids})
 
@@ -288,7 +290,7 @@ class HTTPClient:
     ) -> Response[EditPasteResponse]:
         route = Route("PATCH", "/paste/{paste_id}", paste_id=paste_id)
 
-        json_: dict[str, Any] = {}
+        json_: Dict[str, Any] = {}
 
         if new_content is not MISSING:
             json_["new_content"] = new_content
@@ -301,7 +303,7 @@ class HTTPClient:
 
         return self.request(route, json=json_)
 
-    def get_my_pastes(self, *, limit: int) -> Response[list[PasteResponse]]:
+    def get_my_pastes(self, *, limit: int) -> Response[Sequence[PasteResponse]]:
         route = Route("GET", "/pastes/@me")
 
         return self.request(route, params={limit: limit})

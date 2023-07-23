@@ -43,7 +43,6 @@ python -m pip install git+https://github.com/PythonistaGuild/mystbin.py.git
 ```
 
 ### Usage examples
-Since the project is considered multi-sync, it will work in a sync/async environment, see the optional dependency of `requests` below.
 
 ```py
 # async example - it will default to async
@@ -52,6 +51,8 @@ import mystbin
 client = mystbin.Client()
 
 paste = await client.create_paste(filename="Hello.txt", content="Hello there!")
+# we also support passing a mystbin.File directly to the `file=` kwarg!
+
 str(paste)
 >>> 'https://mystb.in/<your generated ID>'
 
@@ -70,7 +71,7 @@ import mystbin
 file = mystbin.File(filename="File1.txt", content="Hello there!")
 file2 = mystbin.File(filename="test.py", content="print('hello!')")
 
-paste = await client.create_multifile_paste(files=[file, file2])
+paste = await client.create_paste(files=[file, file2])
 
 for file in paste.files:
     print(file.content)

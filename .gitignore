@@ -1,9 +1,5 @@
 .vscode/
-__ignore__/
-__pycache__/
-*.pyc
-/dist/
-/*.egg-info/
+*.py[cod]
+.venv/
+.idea/
 docs/build
-docs/_static/
-*.ipynb
