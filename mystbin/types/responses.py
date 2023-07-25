@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional, TypedDict
+from typing import List, Optional, TypedDict
 
 
 __all__ = (
@@ -37,15 +37,17 @@ class FileResponse(TypedDict):
     content: str
     loc: int
     charcount: int
+    attachment: Optional[str]
 
 
 class PasteResponse(TypedDict):
     id: str
+    author_id: Optional[int]
     created_at: str
     expires: Optional[str]
     last_edited: Optional[str]
-    views: int
-    files: list[FileResponse]
+    files: List[FileResponse]
+    notice: Optional[str]
 
 
 class EditPasteResponse(TypedDict):

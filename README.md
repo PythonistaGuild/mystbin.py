@@ -21,6 +21,7 @@ If you want the docs for the `main` branch, those can be found [here](https://my
 ### Features
 
 - [x] - Creating pastes.
+  - [ ] Supporting attachments.
 - [ ] - Editing pastes.
     - Pending design work.
 - [x] - Deleting pastes.

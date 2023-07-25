@@ -136,7 +136,7 @@ class Client:
 
         resolved_files: Sequence[File] = []
         if filename and content:
-            resolved_files = [File(filename=filename, content=content)]
+            resolved_files = [File(filename=filename, content=content, attachment_url=None)]
         elif file:
             resolved_files = [file]
 

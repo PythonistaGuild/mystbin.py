@@ -54,18 +54,15 @@ class File:
     __slots__ = (
         "filename",
         "content",
+        "attachment_url",
         "_lines_of_code",
         "_character_count",
     )
 
-    def __init__(
-        self,
-        *,
-        filename: str,
-        content: str,
-    ) -> None:
+    def __init__(self, *, filename: str, content: str, attachment_url: Optional[str]) -> None:
         self.filename: str = filename
         self.content: str = content
+        self.attachment_url: Optional[str] = attachment_url
 
     @property
     def lines_of_code(self) -> int:
@@ -77,10 +74,7 @@ class File:
 
     @classmethod
     def from_data(cls, payload: FileResponse, /) -> Self:
-        self = cls(
-            content=payload["content"],
-            filename=payload["filename"],
-        )
+        self = cls(content=payload["content"], filename=payload["filename"], attachment_url=payload["attachment"])
         self._lines_of_code = payload["loc"]
         self._character_count = payload["charcount"]
 
@@ -120,16 +114,11 @@ class Paste:
         "_last_edited",
     )
 
-    def __init__(
-        self,
-        *,
-        id: str,
-        created_at: str,
-        files: List[File],
-    ) -> None:
+    def __init__(self, *, id: str, created_at: str, files: List[File], notice: Optional[str]) -> None:
         self.id: str = id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)
-        self.files: list[File] = files
+        self.files: List[File] = files
+        self.notice: Optional[str] = notice
 
     def __str__(self) -> str:
         return self.url
@@ -156,19 +145,15 @@ class Paste:
     @classmethod
     def from_data(cls, payload: PasteResponse, /) -> Self:
         files = [File.from_data(data) for data in payload["files"]]
-        self = cls(
-            id=payload["id"],
-            created_at=payload["created_at"],
-            files=files,
-        )
+        self = cls(id=payload["id"], created_at=payload["created_at"], files=files, notice=payload["notice"])
         self._views = payload.get("views")
-        last_edited = payload.get("last_edited")
+        last_edited = payload["last_edited"]
         if last_edited:
             self._last_edited = datetime.datetime.fromisoformat(last_edited)
         else:
             self._last_edited = None
 
-        expires = payload.get("expires")
+        expires = payload["expires"]
         if expires:
             self._expires = datetime.datetime.fromisoformat(expires)
         else:
