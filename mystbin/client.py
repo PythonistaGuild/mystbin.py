@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import datetime
-from typing import List, Optional, Sequence, overload
+from typing import List, Literal, Optional, Sequence, overload
 
 import aiohttp
 
@@ -174,7 +174,15 @@ class Client:
         """
         await self.http.delete_pastes(paste_ids=paste_ids)
 
-    async def get_paste(self, paste_id: str, *, password: Optional[str] = None) -> Paste:
+    @overload
+    async def get_paste(self, paste_id: str, *, password: Optional[str] = ..., raw: Literal[False]) -> Paste:
+        ...
+
+    @overload
+    async def get_paste(self, paste_id: str, *, password: Optional[str] = ..., raw: Literal[True]) -> list[str]:
+        ...
+
+    async def get_paste(self, paste_id: str, *, password: Optional[str] = None, raw: bool = False) -> Paste | list[str]:
         """|coro|
 
         Fetch a paste.
@@ -187,6 +195,8 @@ class Client:
             The password of the paste, if any.
         """
         data = await self.http.get_paste(paste_id=paste_id, password=password)
+        if raw:
+            return [item["content"] for item in data["files"]]
         return Paste.from_data(data)
 
     @require_authentication
