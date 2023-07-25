@@ -40,4 +40,4 @@ class VersionInfo(NamedTuple):
     serial: int
 
 
-version_info: VersionInfo = VersionInfo(major=6, minor=0, micro=0, releaselevel="final", serial=0)
+version_info: VersionInfo = VersionInfo(major=6, minor=0, micro=1, releaselevel="final", serial=0)
