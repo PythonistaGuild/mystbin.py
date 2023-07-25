@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import datetime
-from typing import List, Literal, Optional, Sequence, overload
+from typing import List, Literal, Optional, Sequence, Union, overload
 
 import aiohttp
 
@@ -182,7 +182,9 @@ class Client:
     async def get_paste(self, paste_id: str, *, password: Optional[str] = ..., raw: Literal[True]) -> list[str]:
         ...
 
-    async def get_paste(self, paste_id: str, *, password: Optional[str] = None, raw: bool = False) -> Paste | list[str]:
+    async def get_paste(
+        self, paste_id: str, *, password: Optional[str] = None, raw: bool = False
+    ) -> Union[Paste, list[str]]:
         """|coro|
 
         Fetch a paste.
@@ -193,6 +195,14 @@ class Client:
             The paste id to fetch.
         password: Optional[:class:`str`]
             The password of the paste, if any.
+        raw: :class:`bool`
+            Whether to return the raw file(s) content or a :class:`~mystbin.Paste` instance.
+            Defaults to ``False``.
+
+        Returns
+        --------
+        Union[:class:`~mystbin.Paste`, List[:class:`str`]]
+            The paste data returned.
         """
         data = await self.http.get_paste(paste_id=paste_id, password=password)
         if raw:
