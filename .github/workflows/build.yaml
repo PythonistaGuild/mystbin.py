@@ -117,7 +117,7 @@ jobs:
             assets+=("-a" "$asset")
           done
           tag_name="${GITHUB_REF##*/}"
-          hub release create "${assets[@]}" "$tag_name"
+          hub release create "${assets[@]}" -F "CHANGELOG.md" "$tag_name"
 
       - name: "Set up Poetry"
         uses: snok/install-poetry@v1
