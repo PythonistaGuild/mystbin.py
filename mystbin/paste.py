@@ -59,7 +59,7 @@ class File:
         "_character_count",
     )
 
-    def __init__(self, *, filename: str, content: str, attachment_url: Optional[str]) -> None:
+    def __init__(self, *, filename: str, content: str, attachment_url: Optional[str] = None) -> None:
         self.filename: str = filename
         self.content: str = content
         self.attachment_url: Optional[str] = attachment_url
@@ -147,7 +147,7 @@ class Paste:
         files = [File.from_data(data) for data in payload["files"]]
         self = cls(id=payload["id"], created_at=payload["created_at"], files=files, notice=payload["notice"])
         self._views = payload.get("views")
-        last_edited = payload["last_edited"]
+        last_edited = payload.get("last_edited")
         if last_edited:
             self._last_edited = datetime.datetime.fromisoformat(last_edited)
         else:
