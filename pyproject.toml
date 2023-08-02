@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "mystbin-py"
-version = "6.0.1"
+version = "6.0.2"
 description = "A small simple wrapper around the mystb.in API."
-authors = ["AbstractUmbra <Umbra@AbstractUmbra.dev>"]
+authors = ["AbstractUmbra <umbra@abstractumbra.dev>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/PythonistaGuild/mystbin.py"
 repository = "https://github.com/PythonistaGuild/mystbin.py"
-keywords = ["mystbin",  "paste"]
+keywords = ["mystbin", "paste"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
@@ -20,13 +20,11 @@ classifiers = [
     "Topic :: Internet",
     "Typing :: Typed",
 ]
-include = [
-    "LICENSE"
-]
+include = ["LICENSE"]
 packages = [
     { include = "mystbin" },
     { include = "mystbin/**/*.py" },
-    { include = "mystbin/py.typed" }
+    { include = "mystbin/py.typed" },
 ]
 
 [tool.poetry.urls]
@@ -36,13 +34,15 @@ packages = [
 python = "^3.8"
 aiohttp = [
     { version = "^3.8" },
-    { version = "^3.8", markers = "extra == 'speed'", extras= ["speedups"]},
+    { version = "^3.8", markers = "extra == 'speed'", extras = [
+        "speedups",
+    ] },
 ]
 
 sphinx = { version = "^4.0.0", optional = true }
 sphinxcontrib-trio = { version = "*", optional = true }
 furo = { version = "*", optional = true }
-pytz = { version = "*", optional = true, python="<3.9" }
+pytz = { version = "*", optional = true, python = "<3.9" }
 
 [tool.poetry.extras]
 speed = ["aiohttp"]
