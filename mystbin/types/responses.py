@@ -23,7 +23,11 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional, TypedDict
+from typing import TYPE_CHECKING, List, Optional, TypedDict
+
+
+if TYPE_CHECKING:
+    from typing_extensions import NotRequired
 
 
 __all__ = (
@@ -45,7 +49,7 @@ class PasteResponse(TypedDict):
     author_id: Optional[int]
     created_at: str
     expires: Optional[str]
-    last_edited: Optional[str]
+    last_edited: NotRequired[str]
     files: List[FileResponse]
     notice: Optional[str]
 
