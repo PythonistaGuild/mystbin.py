@@ -30,8 +30,10 @@ from .utils import require_authentication
 
 if TYPE_CHECKING:
     import datetime
+    from types import TracebackType
 
     from aiohttp import ClientSession
+    from typing_extensions import Self
 
 __all__ = ("Client",)
 
@@ -41,6 +43,17 @@ class Client:
 
     def __init__(self, *, token: str | None = None, session: ClientSession | None = None) -> None:
         self.http: HTTPClient = HTTPClient(token=token, session=session)
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(
+        self,
+        exc_cls: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+    ) -> None:
+        await self.close()
 
     async def close(self) -> None:
         """|coro|

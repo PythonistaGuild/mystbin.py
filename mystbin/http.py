@@ -126,6 +126,7 @@ class Route:
 class HTTPClient:
     __slots__ = (
         "_session",
+        "_owns_session",
         "_async",
         "_token",
         "_locks",
@@ -135,16 +136,18 @@ class HTTPClient:
     def __init__(self, *, token: str | None, session: aiohttp.ClientSession | None = None) -> None:
         self._token: str | None = token
         self._session: aiohttp.ClientSession | None = session
+        self._owns_session: bool = False
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
 
     async def close(self) -> None:
-        if self._session:
+        if self._session and self._owns_session:
             await self._session.close()
 
     async def _generate_session(self) -> aiohttp.ClientSession:
         self._session = aiohttp.ClientSession()
+        self._owns_session = True
         return self._session
 
     async def request(self, route: Route, **kwargs: Any) -> Any:
