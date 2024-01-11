@@ -64,7 +64,8 @@ version = 'mystbin.__main__:show_version'
 
 [tool.ruff]
 line-length = 125
-exclude = ["docs/extensions/*.py"]
+target-version = "py38"
+exclude = ["docs/**/*.py"]
 select = [
     "C4",
     "F",
