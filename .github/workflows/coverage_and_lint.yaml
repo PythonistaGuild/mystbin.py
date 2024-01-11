@@ -15,12 +15,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.8', '3.9', '3.10', '3.11', '3.x' ]
+        python-version: [ '3.8', '3.x' ]
 
     name: "Type Coverage and Linting @ ${{ matrix.python-version }}"
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -38,7 +38,7 @@ jobs:
           version: latest
           virtualenvs-create: true
           virtualenvs-in-project: true
-          virtualenvs-path: ~/.venv
+          virtualenvs-path: .venv
 
       - name: "Setup Python @ ${{ matrix.python-version }}"
         id: setup-python
@@ -58,7 +58,7 @@ jobs:
         if: ${{ steps.cached-pip-wheels.outputs.cache-hit != 'true' }}
         id: install-deps
         run: |
-          poetry install --without=dev --no-interaction
+          poetry install --all-extras -n --no-cache --no-interaction
 
       - name: Activate venv @ ${{ matrix.python-version }}
         run: |
@@ -74,13 +74,4 @@ jobs:
 
       - name: Lint
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
-        uses: github/super-linter/slim@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BRANCH: main
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_PYTHON_BLACK: true
-          VALIDATE_PYTHON_ISORT: true
-          LINTER_RULES_PATH: /
-          PYTHON_ISORT_CONFIG_FILE: pyproject.toml
-          PYTHON_BLACK_CONFIG_FILE: pyproject.toml
+        uses: chartboost/ruff-action@v1
