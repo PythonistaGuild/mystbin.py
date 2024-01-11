@@ -57,20 +57,71 @@ sphinxcontrib-trio = "*"
 furo = "*"
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
-isort = "*"
+ruff = "*"
 
 [tool.poetry.scripts]
 version = 'mystbin.__main__:show_version'
 
-[tool.black]
+[tool.ruff]
 line-length = 125
-target-version = ["py38"]
+exclude = ["docs/extensions/*.py"]
+select = [
+    "C4",
+    "F",
+    "G",
+    "I",
+    "PTH",
+    "RUF",
+    "SIM",
+    "TCH",
+    "UP",
+    "W",
+    "PERF",
+    "ANN",
+]
+ignore = [
+    "F401",
+    "F402",
+    "F403",
+    "F405",
+    "PERF203",
+    "RUF001",
+    "RUF009",
+    "SIM105",
+    "UP034",
+    "UP038",
+    "ANN101",
+    "ANN102",
+    "ANN401",
+]
 
-[tool.isort]
-profile = "black"
-src_paths = ["mystbin"]
-lines_after_imports = 2
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.ruff.isort]
+split-on-trailing-comma = true
+combine-as-imports = true
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+parametrize-names-type = "csv"
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "single"
 
 [tool.pyright]
 ignore = ["docs/conf.py"]

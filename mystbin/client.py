@@ -22,15 +22,16 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-import datetime
-from typing import List, Literal, Optional, Sequence, Union, overload
-
-import aiohttp
+from typing import TYPE_CHECKING, Literal, Sequence, overload
 
 from .http import HTTPClient
 from .paste import File, Paste
 from .utils import require_authentication
 
+if TYPE_CHECKING:
+    import datetime
+
+    from aiohttp import ClientSession
 
 __all__ = ("Client",)
 
@@ -38,7 +39,7 @@ __all__ = ("Client",)
 class Client:
     __slots__ = ("http",)
 
-    def __init__(self, *, token: Optional[str] = None, session: Optional[aiohttp.ClientSession] = None) -> None:
+    def __init__(self, *, token: str | None = None, session: ClientSession | None = None) -> None:
         self.http: HTTPClient = HTTPClient(token=token, session=session)
 
     async def close(self) -> None:
@@ -56,8 +57,8 @@ class Client:
         content: str,
         file: None = ...,
         files: None = ...,
-        password: Optional[str] = ...,
-        expires: Optional[datetime.datetime] = ...,
+        password: str | None = ...,
+        expires: datetime.datetime | None = ...,
     ) -> Paste:
         ...
 
@@ -69,8 +70,8 @@ class Client:
         content: None = ...,
         file: File,
         files: None = ...,
-        password: Optional[str] = ...,
-        expires: Optional[datetime.datetime] = ...,
+        password: str | None = ...,
+        expires: datetime.datetime | None = ...,
     ) -> Paste:
         ...
 
@@ -82,20 +83,20 @@ class Client:
         content: None = ...,
         file: None = ...,
         files: Sequence[File],
-        password: Optional[str] = ...,
-        expires: Optional[datetime.datetime] = ...,
+        password: str | None = ...,
+        expires: datetime.datetime | None = ...,
     ) -> Paste:
         ...
 
     async def create_paste(
         self,
         *,
-        filename: Optional[str] = None,
-        content: Optional[str] = None,
-        file: Optional[File] = None,
-        files: Optional[Sequence[File]] = None,
-        password: Optional[str] = None,
-        expires: Optional[datetime.datetime] = None,
+        filename: str | None = None,
+        content: str | None = None,
+        file: File | None = None,
+        files: Sequence[File] | None = None,
+        password: str | None = None,
+        expires: datetime.datetime | None = None,
     ) -> Paste:
         """|coro|
 
@@ -162,7 +163,7 @@ class Client:
         await self.http.delete_pastes(paste_ids=[paste_id])
 
     @require_authentication
-    async def delete_pastes(self, paste_ids: List[str], /) -> None:
+    async def delete_pastes(self, paste_ids: list[str], /) -> None:
         """|coro|
 
         Delete multiple pastes.
@@ -175,16 +176,14 @@ class Client:
         await self.http.delete_pastes(paste_ids=paste_ids)
 
     @overload
-    async def get_paste(self, paste_id: str, *, password: Optional[str] = ..., raw: Literal[False]) -> Paste:
+    async def get_paste(self, paste_id: str, *, password: str | None = ..., raw: Literal[False]) -> Paste:
         ...
 
     @overload
-    async def get_paste(self, paste_id: str, *, password: Optional[str] = ..., raw: Literal[True]) -> list[str]:
+    async def get_paste(self, paste_id: str, *, password: str | None = ..., raw: Literal[True]) -> list[str]:
         ...
 
-    async def get_paste(
-        self, paste_id: str, *, password: Optional[str] = None, raw: bool = False
-    ) -> Union[Paste, list[str]]:
+    async def get_paste(self, paste_id: str, *, password: str | None = None, raw: bool = False) -> Paste | list[str]:
         """|coro|
 
         Fetch a paste.
@@ -210,7 +209,7 @@ class Client:
         return Paste.from_data(data)
 
     @require_authentication
-    async def get_user_pastes(self, *, limit: int = 100) -> List[Paste]:
+    async def get_user_pastes(self, *, limit: int = 100) -> list[Paste]:
         """|coro|
 
         Get all pastes belonging to the current authenticated user.

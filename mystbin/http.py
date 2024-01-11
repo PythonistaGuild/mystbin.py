@@ -33,13 +33,9 @@ from typing import (
     Any,
     ClassVar,
     Coroutine,
-    Dict,
     Literal,
-    Optional,
     Sequence,
-    Type,
     TypeVar,
-    Union,
 )
 from urllib.parse import quote as _uriquote
 
@@ -48,7 +44,6 @@ import aiohttp
 from . import __version__
 from .errors import APIException
 from .utils import MISSING
-
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -74,7 +69,7 @@ def _clean_dt(dt: datetime.datetime) -> str:
     return dt.isoformat()
 
 
-async def json_or_text(response: aiohttp.ClientResponse, /) -> Union[Dict[str, Any], str]:
+async def json_or_text(response: aiohttp.ClientResponse, /) -> dict[str, Any] | str:
     """A quick method to parse a `aiohttp.ClientResponse` and test if it's json or text."""
     text = await response.text(encoding="utf-8")
     try:
@@ -102,9 +97,9 @@ class MaybeUnlock:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BE]],
-        exc: Optional[BE],
-        traceback: Optional[TracebackType],
+        exc_type: type[BE] | None,
+        exc: BE | None,
+        traceback: TracebackType | None,
     ) -> None:
         if self._unlock:
             self.lock.release()
@@ -137,9 +132,9 @@ class HTTPClient:
         "user_agent",
     )
 
-    def __init__(self, *, token: Optional[str], session: Optional[aiohttp.ClientSession] = None) -> None:
-        self._token: Optional[str] = token
-        self._session: Optional[aiohttp.ClientSession] = session
+    def __init__(self, *, token: str | None, session: aiohttp.ClientSession | None = None) -> None:
+        self._token: str | None = token
+        self._session: aiohttp.ClientSession | None = session
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
@@ -178,7 +173,7 @@ class HTTPClient:
         LOGGER.debug("Current request headers: %s", headers)
         LOGGER.debug("Current request url: %s", route.url)
 
-        response: Optional[aiohttp.ClientResponse] = None
+        response: aiohttp.ClientResponse | None = None
         await lock.acquire()
         with MaybeUnlock(lock) as maybe_lock:
             for tries in range(5):
@@ -246,14 +241,14 @@ class HTTPClient:
     def create_paste(
         self,
         *,
-        file: Optional[File] = None,
-        files: Optional[Sequence[File]] = None,
-        password: Optional[str],
-        expires: Optional[datetime.datetime],
+        file: File | None = None,
+        files: Sequence[File] | None = None,
+        password: str | None,
+        expires: datetime.datetime | None,
     ) -> Response[PasteResponse]:
         route = Route("PUT", "/paste")
 
-        json_: Dict[str, Any] = {}
+        json_: dict[str, Any] = {}
         if file:
             json_["files"] = [file.to_dict()]
         elif files:
@@ -273,7 +268,7 @@ class HTTPClient:
         route = Route("DELETE", "/paste")
         return self.request(route=route, json={"pastes": paste_ids})
 
-    def get_paste(self, *, paste_id: str, password: Optional[str]) -> Response[PasteResponse]:
+    def get_paste(self, *, paste_id: str, password: str | None) -> Response[PasteResponse]:
         route = Route("GET", "/paste/{paste_id}", paste_id=paste_id)
 
         if password:
@@ -290,7 +285,7 @@ class HTTPClient:
     ) -> Response[EditPasteResponse]:
         route = Route("PATCH", "/paste/{paste_id}", paste_id=paste_id)
 
-        json_: Dict[str, Any] = {}
+        json_: dict[str, Any] = {}
 
         if new_content is not MISSING:
             json_["new_content"] = new_content

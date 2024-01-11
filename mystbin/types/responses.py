@@ -22,11 +22,11 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional, TypedDict
-
+from typing import TYPE_CHECKING, TypedDict
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from typing_extensions import NotRequired
 
 
@@ -41,19 +41,19 @@ class FileResponse(TypedDict):
     content: str
     loc: int
     charcount: int
-    attachment: Optional[str]
+    attachment: str | None
 
 
 class PasteResponse(TypedDict):
     id: str
-    author_id: Optional[int]
+    author_id: int | None
     created_at: str
-    expires: Optional[str]
+    expires: str | None
     last_edited: NotRequired[str]
-    files: List[FileResponse]
-    notice: Optional[str]
+    files: list[FileResponse]
+    notice: NotRequired[str]
 
 
 class EditPasteResponse(TypedDict):
     id: str
-    expires: Optional[datetime]
+    expires: datetime | None

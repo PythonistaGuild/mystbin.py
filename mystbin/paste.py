@@ -23,8 +23,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
-
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -59,10 +58,10 @@ class File:
         "_character_count",
     )
 
-    def __init__(self, *, filename: str, content: str, attachment_url: Optional[str] = None) -> None:
+    def __init__(self, *, filename: str, content: str, attachment_url: str | None = None) -> None:
         self.filename: str = filename
         self.content: str = content
-        self.attachment_url: Optional[str] = attachment_url
+        self.attachment_url: str | None = attachment_url
 
     @property
     def lines_of_code(self) -> int:
@@ -74,22 +73,26 @@ class File:
 
     @classmethod
     def from_data(cls, payload: FileResponse, /) -> Self:
-        self = cls(content=payload["content"], filename=payload["filename"], attachment_url=payload["attachment"])
+        self = cls(
+            content=payload["content"],
+            filename=payload["filename"],
+            attachment_url=payload["attachment"],
+        )
         self._lines_of_code = payload["loc"]
         self._character_count = payload["charcount"]
 
         return self
 
-    def to_dict(self) -> Dict[str, Any]:
-        ret: Dict[str, Any] = {"content": self.content, "filename": self.filename}
+    def to_dict(self) -> dict[str, Any]:
+        ret: dict[str, Any] = {"content": self.content, "filename": self.filename}
 
         return ret
 
 
 class Paste:
-    _last_edited: Optional[datetime.datetime]
-    _expires: Optional[datetime.datetime]
-    _views: Optional[int]
+    _last_edited: datetime.datetime | None
+    _expires: datetime.datetime | None
+    _views: int | None
 
     """Represents a Paste object from mystb.in.
 
@@ -114,11 +117,11 @@ class Paste:
         "_last_edited",
     )
 
-    def __init__(self, *, id: str, created_at: str, files: List[File], notice: Optional[str]) -> None:
+    def __init__(self, *, id: str, created_at: str, files: list[File], notice: str | None) -> None:
         self.id: str = id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)
-        self.files: List[File] = files
-        self.notice: Optional[str] = notice
+        self.files: list[File] = files
+        self.notice: str | None = notice
 
     def __str__(self) -> str:
         return self.url
@@ -131,21 +134,26 @@ class Paste:
         return f"https://mystb.in/{self.id}"
 
     @property
-    def last_edited(self) -> Optional[datetime.datetime]:
+    def last_edited(self) -> datetime.datetime | None:
         return self._last_edited
 
     @property
-    def expires(self) -> Optional[datetime.datetime]:
+    def expires(self) -> datetime.datetime | None:
         return self._expires
 
     @property
-    def views(self) -> Optional[int]:
+    def views(self) -> int | None:
         return self._views
 
     @classmethod
     def from_data(cls, payload: PasteResponse, /) -> Self:
         files = [File.from_data(data) for data in payload["files"]]
-        self = cls(id=payload["id"], created_at=payload["created_at"], files=files, notice=payload["notice"])
+        self = cls(
+            id=payload["id"],
+            created_at=payload["created_at"],
+            files=files,
+            notice=payload.get("notice"),
+        )
         self._views = payload.get("views")
         last_edited = payload.get("last_edited")
         if last_edited:

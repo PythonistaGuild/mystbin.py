@@ -19,8 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
-import aiohttp
-
+from aiohttp import ClientResponse
 
 __all__ = (
     "APIException",
@@ -29,7 +28,7 @@ __all__ = (
 
 
 class APIException(Exception):
-    def __init__(self, *, response: aiohttp.ClientResponse, status_code: int) -> None:
+    def __init__(self, *, response: ClientResponse, status_code: int) -> None:
         self.response = response
         self.status_code = status_code
         super().__init__(self.status_code)
