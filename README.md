@@ -12,7 +12,7 @@
 </div>
 <br>
 
-A small simple wrapper around the [Mystb.in](https://mystb.in/) API. API docs can be found [here](https://api.mystb.in/docs).
+A small simple wrapper around the [Mystb.in](https://mystb.in/) API. API docs can be found [here](https://mystb.in/api/documentation).
 
 Documentation for this wrapper can be found [here](https://mystbinpy.readthedocs.io/en/stable/).
 If you want the docs for the `main` branch, those can be found [here](https://mystbinpy.readthedocs.io/en/latest/).
@@ -21,12 +21,8 @@ If you want the docs for the `main` branch, those can be found [here](https://my
 ### Features
 
 - [x] - Creating pastes.
-  - [ ] Supporting attachments.
-- [ ] - Editing pastes.
-    - Pending design work.
 - [x] - Deleting pastes.
 - [x] - Getting pastes.
-- [ ] - User endpoints.
 - [ ] - Sync client.
   - This one will take some time as I have no motivation to do it, but PRs are welcome if others want to do it.
 
@@ -51,8 +47,10 @@ import mystbin
 
 client = mystbin.Client()
 
-paste = await client.create_paste(filename="Hello.txt", content="Hello there!")
-# we also support passing a mystbin.File directly to the `file=` kwarg!
+file = mystbin.File(filename="File1.txt", content="Hello there!")
+file2 = mystbin.File(filename="test.py", content="print('hello!')")
+
+paste = await client.create_paste(files=[file, file2])
 
 str(paste)
 >>> 'https://mystb.in/<your generated ID>'
@@ -63,22 +61,6 @@ get_paste.files[0].content
 
 get_paste.created_at
 >>> datetime.datetime(2020, 10, 6, 10, 53, 57, 556741)
-```
-
-Or if you want to create a paste with multiple files...
-```py
-import mystbin
-
-file = mystbin.File(filename="File1.txt", content="Hello there!")
-file2 = mystbin.File(filename="test.py", content="print('hello!')")
-
-paste = await client.create_paste(files=[file, file2])
-
-for file in paste.files:
-    print(file.content)
-
->>> "Hello there!"
->>> "print('hello!')"
 ```
 
 If you have any question please feel free to join the Pythonista Discord server:
