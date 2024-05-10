@@ -26,9 +26,12 @@ import datetime
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from typing_extensions import Self
 
-    from mystbin.types.responses import FileResponse, PasteResponse
+    from mystbin.types.responses import CreatePasteResponse, FileResponse, GetPasteResponse
+
 
 __all__ = (
     "File",
@@ -39,6 +42,8 @@ __all__ = (
 class File:
     _lines_of_code: int
     _character_count: int
+    _parent_id: str
+    _annotation: str
 
     """Represents a single file within a mystb.in paste.
 
@@ -53,15 +58,15 @@ class File:
     __slots__ = (
         "filename",
         "content",
-        "attachment_url",
         "_lines_of_code",
         "_character_count",
+        "_parent_id",
+        "_annotation",
     )
 
-    def __init__(self, *, filename: str, content: str, attachment_url: str | None = None) -> None:
+    def __init__(self, *, filename: str, content: str) -> None:
         self.filename: str = filename
         self.content: str = content
-        self.attachment_url: str | None = attachment_url
 
     @property
     def lines_of_code(self) -> int:
@@ -71,28 +76,35 @@ class File:
     def character_count(self) -> int:
         return self._character_count
 
+    @property
+    def annotation(self) -> str:
+        return self._annotation
+
+    @property
+    def parent_id(self) -> str:
+        return self._parent_id
+
     @classmethod
     def from_data(cls, payload: FileResponse, /) -> Self:
         self = cls(
             content=payload["content"],
             filename=payload["filename"],
-            attachment_url=payload["attachment"],
         )
         self._lines_of_code = payload["loc"]
         self._character_count = payload["charcount"]
+        self._annotation = payload["annotation"]
+        self._parent_id = payload["parent_id"]
 
         return self
 
     def to_dict(self) -> dict[str, Any]:
-        ret: dict[str, Any] = {"content": self.content, "filename": self.filename}
-
-        return ret
+        return {"content": self.content, "filename": self.filename}
 
 
 class Paste:
-    _last_edited: datetime.datetime | None
     _expires: datetime.datetime | None
     _views: int | None
+    _security: str | None
 
     """Represents a Paste object from mystb.in.
 
@@ -111,17 +123,15 @@ class Paste:
         "author_id",
         "created_at",
         "files",
-        "notice",
+        "_security",
         "_expires",
         "_views",
-        "_last_edited",
     )
 
-    def __init__(self, *, id: str, created_at: str, files: list[File], notice: str | None) -> None:
+    def __init__(self, *, id: str, created_at: str, files: Sequence[File]) -> None:
         self.id: str = id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)
-        self.files: list[File] = files
-        self.notice: str | None = notice
+        self.files: Sequence[File] = files
 
     def __str__(self) -> str:
         return self.url
@@ -134,10 +144,6 @@ class Paste:
         return f"https://mystb.in/{self.id}"
 
     @property
-    def last_edited(self) -> datetime.datetime | None:
-        return self._last_edited
-
-    @property
     def expires(self) -> datetime.datetime | None:
         return self._expires
 
@@ -145,26 +151,45 @@ class Paste:
     def views(self) -> int | None:
         return self._views
 
+    @property
+    def security_token(self) -> str | None:
+        return self._security
+
     @classmethod
-    def from_data(cls, payload: PasteResponse, /) -> Self:
+    def from_get(cls, payload: GetPasteResponse, /) -> Self:
         files = [File.from_data(data) for data in payload["files"]]
         self = cls(
             id=payload["id"],
             created_at=payload["created_at"],
             files=files,
-            notice=payload.get("notice"),
         )
-        self._views = payload.get("views")
-        last_edited = payload.get("last_edited")
-        if last_edited:
-            self._last_edited = datetime.datetime.fromisoformat(last_edited)
-        else:
-            self._last_edited = None
+        self._views = payload["views"]
 
         expires = payload["expires"]
         if expires:
             self._expires = datetime.datetime.fromisoformat(expires)
         else:
             self._expires = None
+
+        self._security = None
+
+        return self
+
+    @classmethod
+    def from_create(cls, payload: CreatePasteResponse, files: Sequence[File]) -> Self:
+        self = cls(
+            id=payload["id"],
+            created_at=payload["created_at"],
+            files=files,
+        )
+        self._views = 0
+
+        expires = payload["expires"]
+        if expires:
+            self._expires = datetime.datetime.fromisoformat(expires)
+        else:
+            self._expires = None
+
+        self._security = payload["safety"]
 
         return self

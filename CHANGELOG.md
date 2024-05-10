@@ -1,13 +1,12 @@
-6.1.0
+7.0.0
 
 # mystbin.py Changelog
 
 ## Added
 
 ## Changes
-- Modernise codebase and tooling with Ruff.
+- Codebase now aligns with new mystbin.
 
 ## Fixes
-- KeyError upon accessing late init key in api response.
 
 ### Notes

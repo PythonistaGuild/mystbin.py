@@ -26,7 +26,6 @@ from typing import TYPE_CHECKING, Literal, Sequence, overload
 
 from .http import HTTPClient
 from .paste import File, Paste
-from .utils import require_authentication
 
 if TYPE_CHECKING:
     import datetime
@@ -41,17 +40,14 @@ __all__ = ("Client",)
 class Client:
     __slots__ = ("http",)
 
-    def __init__(self, *, token: str | None = None, session: ClientSession | None = None) -> None:
-        self.http: HTTPClient = HTTPClient(token=token, session=session)
+    def __init__(self, *, session: ClientSession | None = None) -> None:
+        self.http: HTTPClient = HTTPClient(session=session)
 
     async def __aenter__(self) -> Self:
         return self
 
     async def __aexit__(
-        self,
-        exc_cls: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None
+        self, exc_cls: type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None
     ) -> None:
         await self.close()
 
@@ -62,52 +58,10 @@ class Client:
         """
         await self.http.close()
 
-    @overload
     async def create_paste(
         self,
         *,
-        filename: str,
-        content: str,
-        file: None = ...,
-        files: None = ...,
-        password: str | None = ...,
-        expires: datetime.datetime | None = ...,
-    ) -> Paste:
-        ...
-
-    @overload
-    async def create_paste(
-        self,
-        *,
-        filename: None = ...,
-        content: None = ...,
-        file: File,
-        files: None = ...,
-        password: str | None = ...,
-        expires: datetime.datetime | None = ...,
-    ) -> Paste:
-        ...
-
-    @overload
-    async def create_paste(
-        self,
-        *,
-        filename: None = ...,
-        content: None = ...,
-        file: None = ...,
         files: Sequence[File],
-        password: str | None = ...,
-        expires: datetime.datetime | None = ...,
-    ) -> Paste:
-        ...
-
-    async def create_paste(
-        self,
-        *,
-        filename: str | None = None,
-        content: str | None = None,
-        file: File | None = None,
-        files: Sequence[File] | None = None,
         password: str | None = None,
         expires: datetime.datetime | None = None,
     ) -> Paste:
@@ -117,84 +71,41 @@ class Client:
 
         Parameters
         -----------
-        filename: Optional[:class:`str`]
-            The filename to create.
-        content: Optional[:class:`str`]
-            The content of the file you are creating.
-        file: Optional[:class:`~mystbin.File`]
-            The pre-created file you wish to upload.
-        files: Optional[List[:class:`~mystbin.File`]]
+        files: List[:class:`~mystbin.File`]
             The pre-creates list of files you wish to upload.
         password: Optional[:class:`str`]
             The password of the paste, if any.
         expires: Optional[:class:`datetime.datetime`]
             When the paste expires, if any.
 
-        Raises
-        -------
-        :exc:`ValueError`
-            A bad combinarion of singular and plural pastes were passed.
-
         Returns
         --------
         :class:`mystbin.Paste`
             The paste that was created.
-
-
-        ..note::
-            Passing combinations of both singular and plural files is not supports and will raise an exception.
-            Internally the order of precesence is ``files`` > ``file`` > ``filename and content``.
         """
-        if (filename and content) and file:
-            raise ValueError("Cannot provide both `file` and `filename`/`content`")
+        data = await self.http.create_paste(files=files, password=password, expires=expires)
+        return Paste.from_create(data, files=files)
 
-        resolved_files: Sequence[File] = []
-        if filename and content:
-            resolved_files = [File(filename=filename, content=content, attachment_url=None)]
-        elif file:
-            resolved_files = [file]
-
-        if resolved_files and files:
-            raise ValueError("Cannot provide both singular and plural files.")
-
-        resolved_files = files or resolved_files
-
-        data = await self.http.create_paste(files=resolved_files, password=password, expires=expires)
-        return Paste.from_data(data)
-
-    @require_authentication
-    async def delete_paste(self, paste_id: str, /) -> None:
+    async def delete_paste(self, security_token: str, /) -> None:
         """|coro|
 
         Delete a paste.
 
         Parameters
         -----------
-        paste_id: :class:`str`
-            The paste to delete.
+        security_token: :class:`str`
+            The security token relating to the paste to delete.
         """
-        await self.http.delete_pastes(paste_ids=[paste_id])
-
-    @require_authentication
-    async def delete_pastes(self, paste_ids: list[str], /) -> None:
-        """|coro|
-
-        Delete multiple pastes.
-
-        Parameters
-        -----------
-        paste_ids: List[:class:`str`]
-            The pastes to delete.
-        """
-        await self.http.delete_pastes(paste_ids=paste_ids)
+        await self.http.delete_paste(security_token)
 
     @overload
-    async def get_paste(self, paste_id: str, *, password: str | None = ..., raw: Literal[False]) -> Paste:
-        ...
+    async def get_paste(self, paste_id: str, *, password: str | None = ..., raw: Literal[False]) -> Paste: ...
 
     @overload
-    async def get_paste(self, paste_id: str, *, password: str | None = ..., raw: Literal[True]) -> list[str]:
-        ...
+    async def get_paste(self, paste_id: str, *, password: str | None = ..., raw: Literal[True]) -> list[str]: ...
+
+    @overload
+    async def get_paste(self, paste_id: str, *, password: str | None = ...) -> Paste: ...
 
     async def get_paste(self, paste_id: str, *, password: str | None = None, raw: bool = False) -> Paste | list[str]:
         """|coro|
@@ -219,24 +130,4 @@ class Client:
         data = await self.http.get_paste(paste_id=paste_id, password=password)
         if raw:
             return [item["content"] for item in data["files"]]
-        return Paste.from_data(data)
-
-    @require_authentication
-    async def get_user_pastes(self, *, limit: int = 100) -> list[Paste]:
-        """|coro|
-
-        Get all pastes belonging to the current authenticated user.
-
-        Parameters
-        -----------
-        limit: :class:`int`
-            The amount of pastes to fetch. Defaults to ``100``.
-
-        Returns
-        --------
-        List[:class:`Paste`]
-            The pastes that were fetched.
-        """
-        data = await self.http.get_my_pastes(limit=limit)
-
-        return [Paste.from_data(x) for x in data]
+        return Paste.from_get(data)

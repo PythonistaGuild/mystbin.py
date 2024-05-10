@@ -19,21 +19,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
-from __future__ import annotations
 
-from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import Any
 
-from .errors import AuthenticationRequired
-
-if TYPE_CHECKING:
-    from typing_extensions import Concatenate, ParamSpec
-
-    C = TypeVar("C", bound="Any")
-    T = TypeVar("T")
-    B = ParamSpec("B")
-
-__all__ = ("MISSING", "require_authentication")
+__all__ = ("MISSING",)
 
 
 class _MissingSentinel:
@@ -53,16 +42,3 @@ class _MissingSentinel:
 
 
 MISSING: Any = _MissingSentinel()
-
-
-def require_authentication(func: Callable[Concatenate[C, B], T]) -> Callable[Concatenate[C, B], T]:
-    """A decorator to assure the `self` parameter of decorated methods has authentication set."""
-
-    @wraps(func)
-    def wrapper(item: C, *args: B.args, **kwargs: B.kwargs) -> T:
-        if not item.http._authenticated:
-            raise AuthenticationRequired("This method requires you to be authenticated to the API.")
-
-        return func(item, *args, **kwargs)
-
-    return wrapper

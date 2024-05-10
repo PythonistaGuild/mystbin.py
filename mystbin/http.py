@@ -43,7 +43,6 @@ import aiohttp
 
 from . import __version__
 from .errors import APIException
-from .utils import MISSING
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -54,7 +53,8 @@ if TYPE_CHECKING:
     Response = Coroutine[None, None, T]
     MU = TypeVar("MU", bound="MaybeUnlock")
     BE = TypeVar("BE", bound=BaseException)
-    from .types.responses import EditPasteResponse, PasteResponse
+    from .types.responses import CreatePasteResponse, GetPasteResponse
+
 
 SupportedHTTPVerb = Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
 
@@ -112,7 +112,7 @@ class Route:
         "url",
     )
 
-    API_BASE: ClassVar[str] = "https://api.mystb.in"
+    API_BASE: ClassVar[str] = "https://mystb.in/api"
 
     def __init__(self, verb: SupportedHTTPVerb, path: str, **params: Any) -> None:
         self.verb: SupportedHTTPVerb = verb
@@ -133,8 +133,7 @@ class HTTPClient:
         "user_agent",
     )
 
-    def __init__(self, *, token: str | None, session: aiohttp.ClientSession | None = None) -> None:
-        self._token: str | None = token
+    def __init__(self, *, session: aiohttp.ClientSession | None = None) -> None:
         self._session: aiohttp.ClientSession | None = session
         self._owns_session: bool = False
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
@@ -161,9 +160,6 @@ class HTTPClient:
             self._locks[bucket] = lock
 
         headers = kwargs.pop("headers", {})
-
-        if self._token is not None:
-            headers["Authorization"] = f"Bearer {self._token}"
         headers["User-Agent"] = self.user_agent
 
         if "json" in kwargs:
@@ -222,6 +218,7 @@ class HTTPClient:
                             await asyncio.sleep(sleep_)
                             continue
 
+                        print(data)
                         assert isinstance(data, dict)
                         LOGGER.exception("Unhandled HTTP error occurred: %s -> %s", response.status, data)
                         raise APIException(
@@ -244,64 +241,30 @@ class HTTPClient:
     def create_paste(
         self,
         *,
-        file: File | None = None,
-        files: Sequence[File] | None = None,
+        files: Sequence[File],
         password: str | None,
         expires: datetime.datetime | None,
-    ) -> Response[PasteResponse]:
-        route = Route("PUT", "/paste")
+    ) -> Response[CreatePasteResponse]:
+        route = Route("POST", "/paste")
 
         json_: dict[str, Any] = {}
-        if file:
-            json_["files"] = [file.to_dict()]
-        elif files:
-            json_["files"] = [f.to_dict() for f in files]
+        headers: dict[str, Any] = {}
+        json_["files"] = [f.to_dict() for f in files]
 
         if password:
-            json_["password"] = password
+            headers["password"] = password
         if expires:
             json_["expires"] = _clean_dt(expires)
 
-        return self.request(route=route, json=json_)
+        return self.request(route=route, json=json_, headers=headers)
 
-    def delete_paste(self, *, paste_id: str) -> Response[None]:
-        return self.delete_pastes(paste_ids=[paste_id])
+    def delete_paste(self, security_token: str, /) -> Response[bool]:
+        route = Route("GET", "/security/delete/{security_token}", security_token=security_token)
+        return self.request(route)
 
-    def delete_pastes(self, *, paste_ids: Sequence[str]) -> Response[None]:
-        route = Route("DELETE", "/paste")
-        return self.request(route=route, json={"pastes": paste_ids})
-
-    def get_paste(self, *, paste_id: str, password: str | None) -> Response[PasteResponse]:
+    def get_paste(self, *, paste_id: str, password: str | None) -> Response[GetPasteResponse]:
         route = Route("GET", "/paste/{paste_id}", paste_id=paste_id)
 
         if password:
             return self.request(route=route, params={"password": password})
         return self.request(route=route)
-
-    def edit_paste(
-        self,
-        paste_id: str,
-        *,
-        new_content: str = MISSING,
-        new_filename: str = MISSING,
-        new_expires: datetime.datetime = MISSING,
-    ) -> Response[EditPasteResponse]:
-        route = Route("PATCH", "/paste/{paste_id}", paste_id=paste_id)
-
-        json_: dict[str, Any] = {}
-
-        if new_content is not MISSING:
-            json_["new_content"] = new_content
-
-        if new_filename is not MISSING:
-            json_["new_filename"] = new_filename
-
-        if new_expires is not MISSING:
-            json_["new_expires"] = _clean_dt(new_expires)
-
-        return self.request(route, json=json_)
-
-    def get_my_pastes(self, *, limit: int) -> Response[Sequence[PasteResponse]]:
-        route = Route("GET", "/pastes/@me")
-
-        return self.request(route, params={limit: limit})

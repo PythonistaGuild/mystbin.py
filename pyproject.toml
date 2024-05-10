@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mystbin-py"
-version = "6.1.0"
+version = "7.0.0"
 description = "A small simple wrapper around the mystb.in API."
 authors = ["AbstractUmbra <umbra@abstractumbra.dev>"]
 license = "MIT"
@@ -17,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Internet",
     "Typing :: Typed",
 ]
@@ -58,6 +59,7 @@ furo = "*"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "*"
+"typing-extensions" = "*"
 
 [tool.poetry.scripts]
 version = 'mystbin.__main__:show_version'
@@ -65,6 +67,8 @@ version = 'mystbin.__main__:show_version'
 [tool.ruff]
 line-length = 125
 target-version = "py38"
+
+[tool.ruff.lint]
 exclude = ["docs/**/*.py"]
 select = [
     "C4",
@@ -96,33 +100,31 @@ ignore = [
     "ANN401",
 ]
 
-[tool.ruff.format]
-# Like Black, use double quotes for strings.
-quote-style = "double"
 
-# Like Black, indent with spaces, rather than tabs.
-indent-style = "space"
-
-# Like Black, respect magic trailing commas.
-skip-magic-trailing-comma = false
-
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
-
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 split-on-trailing-comma = true
 combine-as-imports = true
 
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
 parametrize-names-type = "csv"
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
 
 [tool.pyright]
 ignore = ["docs/conf.py"]

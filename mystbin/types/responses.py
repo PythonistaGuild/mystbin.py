@@ -22,38 +22,35 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
-
-if TYPE_CHECKING:
-    from datetime import datetime
-
-    from typing_extensions import NotRequired
-
+from typing import TypedDict
 
 __all__ = (
     "FileResponse",
-    "PasteResponse",
+    "GetPasteResponse",
+    "CreatePasteResponse",
 )
 
 
 class FileResponse(TypedDict):
-    filename: str
-    content: str
-    loc: int
+    annotation: str
     charcount: int
-    attachment: str | None
+    content: str
+    filename: str
+    loc: int
+    parent_id: str
 
 
-class PasteResponse(TypedDict):
-    id: str
-    author_id: int | None
+class CreatePasteResponse(TypedDict):
     created_at: str
     expires: str | None
-    last_edited: NotRequired[str]
-    files: list[FileResponse]
-    notice: NotRequired[str]
-
-
-class EditPasteResponse(TypedDict):
     id: str
-    expires: datetime | None
+    safety: str
+
+
+class GetPasteResponse(TypedDict):
+    id: str
+    has_password: bool
+    views: int
+    created_at: str
+    expires: str | None
+    files: list[FileResponse]
