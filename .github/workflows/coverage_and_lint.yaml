@@ -26,7 +26,7 @@ jobs:
 
       - name: "Load cached poetry installation @ ${{ matrix.python-version }}"
         id: cached-poetry
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.local
           key: poetry-0
@@ -49,7 +49,7 @@ jobs:
 
       - name: "Load cached venv @ ${{ matrix.python-version }}"
         id: cached-pip-wheels
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.venv/
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
