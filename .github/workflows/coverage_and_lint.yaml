@@ -65,7 +65,7 @@ jobs:
           echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
 
       - name: "Run Pyright @ ${{ matrix.python-version }}"
-        uses: jakebailey/pyright-action@v1
+        uses: jakebailey/pyright-action@v2
         with:
           warnings: false
           verify-types: "mystbin"
