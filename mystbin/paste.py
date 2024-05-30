@@ -30,7 +30,8 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from mystbin.types.responses import CreatePasteResponse, FileResponse, GetPasteResponse
+    from .http import HTTPClient
+    from .types.responses import CreatePasteResponse, FileResponse, GetPasteResponse
 
 
 __all__ = (
@@ -126,9 +127,11 @@ class Paste:
         "_security",
         "_expires",
         "_views",
+        "_http",
     )
 
-    def __init__(self, *, id: str, created_at: str, files: Sequence[File]) -> None:
+    def __init__(self, *, http: HTTPClient, id: str, created_at: str, files: Sequence[File]) -> None:
+        self._http: HTTPClient = http
         self.id: str = id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)
         self.files: Sequence[File] = files
@@ -156,9 +159,10 @@ class Paste:
         return self._security
 
     @classmethod
-    def from_get(cls, payload: GetPasteResponse, /) -> Self:
+    def from_get(cls, payload: GetPasteResponse, /, *, http: HTTPClient) -> Self:
         files = [File.from_data(data) for data in payload["files"]]
         self = cls(
+            http=http,
             id=payload["id"],
             created_at=payload["created_at"],
             files=files,
@@ -176,8 +180,9 @@ class Paste:
         return self
 
     @classmethod
-    def from_create(cls, payload: CreatePasteResponse, files: Sequence[File]) -> Self:
+    def from_create(cls, payload: CreatePasteResponse, files: Sequence[File], *, http: HTTPClient) -> Self:
         self = cls(
+            http=http,
             id=payload["id"],
             created_at=payload["created_at"],
             files=files,
@@ -193,3 +198,9 @@ class Paste:
         self._security = payload["safety"]
 
         return self
+
+    async def delete(self) -> None:
+        if not self.security_token:
+            raise ValueError("Cannot delete a Paste with no Security Token set.")
+
+        await self._http.delete_paste(self.security_token)

@@ -84,7 +84,7 @@ class Client:
             The paste that was created.
         """
         data = await self.http.create_paste(files=files, password=password, expires=expires)
-        return Paste.from_create(data, files=files)
+        return Paste.from_create(data, files=files, http=self.http)
 
     async def delete_paste(self, security_token: str, /) -> None:
         """|coro|
@@ -130,4 +130,4 @@ class Client:
         data = await self.http.get_paste(paste_id=paste_id, password=password)
         if raw:
             return [item["content"] for item in data["files"]]
-        return Paste.from_get(data)
+        return Paste.from_get(data, http=self.http)
