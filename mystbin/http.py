@@ -248,15 +248,14 @@ class HTTPClient:
         route = Route("POST", "/paste")
 
         json_: dict[str, Any] = {}
-        headers: dict[str, Any] = {}
         json_["files"] = [f.to_dict() for f in files]
 
         if password:
-            headers["password"] = password
+            json_["password"] = password
         if expires:
             json_["expires"] = _clean_dt(expires)
 
-        return self.request(route=route, json=json_, headers=headers)
+        return self.request(route=route, json=json_)
 
     def delete_paste(self, security_token: str, /) -> Response[bool]:
         route = Route("GET", "/security/delete/{security_token}", security_token=security_token)
