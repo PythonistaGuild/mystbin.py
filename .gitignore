@@ -1,7 +1,13 @@
-.vscode/
 *.py[cod]
 .venv/
+.env
+venv/
+.ruff_cache/
+.pdm-python
+
+.vscode/
 .idea/
+
 docs/build
 dist/
-.ruff_cache/
+.pdm-build/
