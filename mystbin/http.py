@@ -134,7 +134,7 @@ class HTTPClient:
         "user_agent",
     )
 
-    def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str = "https://mystb.in/api") -> None:
+    def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str) -> None:
         self._session: aiohttp.ClientSession | None = session
         self._owns_session: bool = False
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()

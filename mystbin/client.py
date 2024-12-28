@@ -38,6 +38,18 @@ __all__ = ("Client",)
 
 
 class Client:
+    """
+    The main client class that interacts with the mystb.in API.
+
+    Parameters
+    -----------
+    session: Optional[:class:`aiohttp.ClientSession`]
+        The session to use for the HTTP requests.
+        If not provided, a new session will be created.
+    api_base: :class:`str`
+        The base URL for the mystb.in API.
+        Defaults to ``https://mystb.in/api``.
+    """
     __slots__ = ("http",)
 
     def __init__(self, *, session: ClientSession | None = None, api_base: str = "https://mystb.in/api") -> None:
