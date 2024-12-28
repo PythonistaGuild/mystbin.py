@@ -130,29 +130,28 @@ class Route:
 
 class HTTPClient:
     __slots__ = (
-        "_async",
         "_locks",
         "_owns_session",
         "_session",
         "_token",
-        "api_base",
+        "root_url",
         "user_agent",
     )
 
-    def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str | None = None) -> None:
+    def __init__(self, *, session: aiohttp.ClientSession | None = None, root_url: str | None = None) -> None:
         self._session: aiohttp.ClientSession | None = session
         self._owns_session: bool = False
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
-        self._resolve_api(api_base)
+        self._resolve_api(root_url)
 
-    def _resolve_api(self, api_base: str | None, /) -> None:
-        if api_base:
-            Route.API_BASE = f"https://{api_base}/api"
-            self.api_base = Route.API_BASE
+    def _resolve_api(self, root_url: str | None, /) -> None:
+        if root_url:
+            Route.API_BASE = root_url + "api" if root_url.endswith("/") else root_url + "/api"
+            self.root_url = root_url + ("/" if not root_url.endswith("/") else "")
         else:
-            self.api_base = "https://mystb.in/api"
+            self.root_url = "https://mystb.in/"
 
     async def close(self) -> None:
         if self._session and self._owns_session:

@@ -46,15 +46,15 @@ class Client:
     session: Optional[:class:`aiohttp.ClientSession`]
         The session to use for the HTTP requests.
         If not provided, a new session will be created.
-    api_base: :class:`str`
-        The base URL for the mystbin instance.
-        Defaults to ``mystb.in``.
+    root_url: :class:`str`
+        The root URL for the mystbin instance.
+        Defaults to ``https://mystb.in``.
     """
 
     __slots__ = ("http",)
 
-    def __init__(self, *, session: ClientSession | None = None, api_base: str = "mystb.in") -> None:
-        self.http: HTTPClient = HTTPClient(session=session, api_base=api_base)
+    def __init__(self, *, session: ClientSession | None = None, root_url: str = "https://mystb.in") -> None:
+        self.http: HTTPClient = HTTPClient(session=session, root_url=root_url)
 
     async def __aenter__(self) -> Self:
         return self
