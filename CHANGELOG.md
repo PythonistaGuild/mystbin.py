@@ -1,12 +1,14 @@
-7.0.2
+7.1.0
 
 # mystbin.py Changelog
 
 ## Added
 
 ## Changes
+- Add ability to change the URL base for self-hosted applications. (42036aa718516dbf22d9800f0861dd93bffe168d)
 
 ## Fixes
-- Fix `password` not being set on paste creation. (3795ebdec5ded72a7d8e55880e45bae5d08331f0)
 
 ### Notes
+
+Thanks @ShadowFox88 for your contribution!
