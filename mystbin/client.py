@@ -40,8 +40,8 @@ __all__ = ("Client",)
 class Client:
     __slots__ = ("http",)
 
-    def __init__(self, *, session: ClientSession | None = None) -> None:
-        self.http: HTTPClient = HTTPClient(session=session)
+    def __init__(self, *, session: ClientSession | None = None, api_base: str = "https://mystb.in/api") -> None:
+        self.http: HTTPClient = HTTPClient(session=session, api_base=api_base)
 
     async def __aenter__(self) -> Self:
         return self
