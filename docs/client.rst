@@ -1,20 +1,19 @@
+.. currentmodule:: mystbin
+
 API Reference
 =============
 
-.. currentmodule:: mystbin
-
 Client
--------
+------
 .. autoclass:: Client
     :members:
 
 Paste
-------
-.. autoclass:: Paste
+-----
+.. autoclass:: Paste()
     :members:
 
 File
------
-
+----
 .. autoclass:: File
     :members:

@@ -41,11 +41,6 @@ __all__ = (
 
 
 class File:
-    _lines_of_code: int
-    _character_count: int
-    _parent_id: str
-    _annotation: str
-
     """Represents a single file within a mystb.in paste.
 
     Attributes
@@ -55,6 +50,11 @@ class File:
     content: :class:`str`
         The file's contents.
     """
+
+    _lines_of_code: int
+    _character_count: int
+    _parent_id: str
+    _annotation: str
 
     __slots__ = (
         "_annotation",
@@ -71,18 +71,42 @@ class File:
 
     @property
     def lines_of_code(self) -> int:
+        """The total lines of code this file has.
+
+        Returns
+        --------
+        :class:`int`
+        """
         return self._lines_of_code
 
     @property
     def character_count(self) -> int:
+        """The total character count of this file.
+
+        Returns
+        --------
+        :class:`int`
+        """
         return self._character_count
 
     @property
     def annotation(self) -> str:
+        """The files annotation.
+
+        Returns
+        --------
+        :class:`str`
+        """
         return self._annotation
 
     @property
     def parent_id(self) -> str:
+        """The files parent paste ID.
+
+        Returns
+        --------
+        :class:`str`
+        """
         return self._parent_id
 
     @classmethod
@@ -103,10 +127,6 @@ class File:
 
 
 class Paste:
-    _expires: datetime.datetime | None
-    _views: int | None
-    _security: str | None
-
     """Represents a Paste object from mystbin instances.
 
     Attributes
@@ -118,6 +138,10 @@ class Paste:
     files: List[:class:`mystbin.File`]
         The list of files within this Paste.
     """
+
+    _expires: datetime.datetime | None
+    _views: int | None
+    _security: str | None
 
     __slots__ = (
         "_expires",
@@ -144,18 +168,42 @@ class Paste:
 
     @property
     def url(self) -> str:
-        return f"{self._http.api_base}{self.id}"
+        """The paste URL.
+
+        Returns
+        --------
+        :class:`str`
+        """
+        return f"{self._http.root_url}{self.id}"
 
     @property
     def expires(self) -> datetime.datetime | None:
+        """When the paste expires, if at all.
+
+        Returns
+        --------
+        Optional[:class:`datetime.datetime`]
+        """
         return self._expires
 
     @property
     def views(self) -> int | None:
+        """The pastes view count, if any.
+
+        Returns
+        --------
+        Optional[:class:`int`]
+        """
         return self._views
 
     @property
     def security_token(self) -> str | None:
+        """The pastes security token, if any.
+
+        Returns
+        --------
+        Optional[:class:`str`]
+        """
         return self._security
 
     @classmethod
@@ -200,6 +248,15 @@ class Paste:
         return self
 
     async def delete(self) -> None:
+        """|coro|
+
+        This method will delete this paste from the mystbin instance.
+
+        Raises
+        -------
+        ValueError
+            The paste requires the security token to be present.
+        """
         if not self.security_token:
             raise ValueError("Cannot delete a Paste with no Security Token set.")
 
