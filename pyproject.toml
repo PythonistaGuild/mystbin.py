@@ -1,6 +1,6 @@
 [project]
 name = "mystbin-py"
-version = "7.1.0"
+version = "7.1.1"
 description = "A small simple wrapper around the mystb.in API."
 authors = [{ name = "Alex Nørgaard", email = "umbra@abstractumbra.dev" }]
 dependencies = [
