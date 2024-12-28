@@ -150,6 +150,9 @@ class HTTPClient:
     def _resolve_api(self, api_base: str | None, /) -> None:
         if api_base:
             Route.API_BASE = f"https://{api_base}/api"
+            self.api_base = Route.API_BASE
+        else:
+            self.api_base = "https://mystb.in/api"
 
     async def close(self) -> None:
         if self._session and self._owns_session:
