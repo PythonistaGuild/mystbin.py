@@ -107,7 +107,7 @@ class Paste:
     _views: int | None
     _security: str | None
 
-    """Represents a Paste object from mystb.in.
+    """Represents a Paste object from mystbin instances.
 
     Attributes
     -----------
@@ -144,7 +144,7 @@ class Paste:
 
     @property
     def url(self) -> str:
-        return f"https://mystb.in/{self.id}"
+        return f"{self._http.api_base}{self.id}"
 
     @property
     def expires(self) -> datetime.datetime | None:

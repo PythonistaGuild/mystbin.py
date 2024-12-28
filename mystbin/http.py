@@ -114,15 +114,14 @@ class Route:
 
     API_BASE: ClassVar[str] = "https://mystb.in/api"
 
-    def __init__(self, verb: SupportedHTTPVerb, path: str, *, api_base: str | None = None, **params: Any) -> None:
-        self.API_BASE = api_base or self.API_BASE
+    def __init__(self, verb: SupportedHTTPVerb, path: str, **params: Any) -> None:
+
         self.verb: SupportedHTTPVerb = verb
         self.path: str = path
         url = self.API_BASE + path
         if params:
             url = url.format_map({k: _uriquote(v) if isinstance(v, str) else v for k, v in params.items()})
         self.url: str = url
-
 
 class HTTPClient:
     __slots__ = (
@@ -131,16 +130,24 @@ class HTTPClient:
         "_owns_session",
         "_session",
         "_token",
-        "user_agent",
+        "api_base",
+        "user_agent"
     )
 
-    def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str) -> None:
+    def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str | None = None) -> None:
         self._session: aiohttp.ClientSession | None = session
         self._owns_session: bool = False
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
-        self.api_base: str = api_base
+        self._resolve_api(api_base)
+
+    def _resolve_api(self, api: str | None) -> None:
+        if api:
+            Route.API_BASE = api + "api" if api.endswith("/") else api + "/api"
+            self.api_base = api + ("/" if not api.endswith("/") else "")
+        else:
+            self.api_base = "https://mystb.in/"
 
     async def close(self) -> None:
         if self._session and self._owns_session:
@@ -247,7 +254,7 @@ class HTTPClient:
         password: str | None,
         expires: datetime.datetime | None,
     ) -> Response[CreatePasteResponse]:
-        route = Route("POST", "/paste", api_base=self.api_base)
+        route = Route("POST", "/paste")
 
         json_: dict[str, Any] = {}
         json_["files"] = [f.to_dict() for f in files]
@@ -260,11 +267,11 @@ class HTTPClient:
         return self.request(route=route, json=json_)
 
     def delete_paste(self, security_token: str, /) -> Response[bool]:
-        route = Route("GET", "/security/delete/{security_token}", security_token=security_token, api_base=self.api_base)
+        route = Route("GET", "/security/delete/{security_token}", security_token=security_token)
         return self.request(route)
 
     def get_paste(self, *, paste_id: str, password: str | None) -> Response[GetPasteResponse]:
-        route = Route("GET", "/paste/{paste_id}", paste_id=paste_id, api_base=self.api_base)
+        route = Route("GET", "/paste/{paste_id}", paste_id=paste_id)
 
         if password:
             return self.request(route=route, params={"password": password})
