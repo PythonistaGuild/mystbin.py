@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
-"""
+"""  # noqa: A005 # we access this via namespace
 
 from __future__ import annotations
 
@@ -52,7 +52,6 @@ if TYPE_CHECKING:
     T = TypeVar("T")
     Response = Coroutine[None, None, T]
     MU = TypeVar("MU", bound="MaybeUnlock")
-    BE = TypeVar("BE", bound=BaseException)
     from .types.responses import CreatePasteResponse, GetPasteResponse
 
 
@@ -69,8 +68,14 @@ def _clean_dt(dt: datetime.datetime) -> str:
     return dt.isoformat()
 
 
-async def json_or_text(response: aiohttp.ClientResponse, /) -> dict[str, Any] | str:
-    """A quick method to parse a `aiohttp.ClientResponse` and test if it's json or text."""
+async def _json_or_text(response: aiohttp.ClientResponse, /) -> dict[str, Any] | str:
+    """A quick method to parse a `aiohttp.ClientResponse` and test if it's json or text.
+
+    Returns
+    --------
+    Union[Dict[:class:`str`, Any], :class:`str`]
+        The JSON object, or request text.
+    """
     text = await response.text(encoding="utf-8")
     try:
         if response.headers["content-type"] == "application/json":
@@ -97,8 +102,8 @@ class MaybeUnlock:
 
     def __exit__(
         self,
-        exc_type: type[BE] | None,
-        exc: BE | None,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
         if self._unlock:
@@ -115,13 +120,13 @@ class Route:
     API_BASE: ClassVar[str] = "https://mystb.in/api"
 
     def __init__(self, verb: SupportedHTTPVerb, path: str, **params: Any) -> None:
-
         self.verb: SupportedHTTPVerb = verb
         self.path: str = path
         url = self.API_BASE + path
         if params:
             url = url.format_map({k: _uriquote(v) if isinstance(v, str) else v for k, v in params.items()})
         self.url: str = url
+
 
 class HTTPClient:
     __slots__ = (
@@ -131,7 +136,7 @@ class HTTPClient:
         "_session",
         "_token",
         "api_base",
-        "user_agent"
+        "user_agent",
     )
 
     def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str | None = None) -> None:
@@ -142,12 +147,9 @@ class HTTPClient:
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
         self._resolve_api(api_base)
 
-    def _resolve_api(self, api: str | None) -> None:
-        if api:
-            Route.API_BASE = api + "api" if api.endswith("/") else api + "/api"
-            self.api_base = api + ("/" if not api.endswith("/") else "")
-        else:
-            self.api_base = "https://mystb.in/"
+    def _resolve_api(self, api_base: str | None, /) -> None:
+        if api_base:
+            Route.API_BASE = f"https://{api_base}/api"
 
     async def close(self) -> None:
         if self._session and self._owns_session:
@@ -194,28 +196,28 @@ class HTTPClient:
                         retry = response.headers.get("x-ratelimit-retry-after", None)
                         LOGGER.debug("retry is: %s", retry)
                         if retry is not None:
-                            retry = datetime.datetime.fromtimestamp(int(retry))
+                            retry = datetime.datetime.fromtimestamp(int(retry), tz=datetime.timezone.utc)
                         # The total ratelimit session hits
                         limit = response.headers.get("x-ratelimit-limit", None)
                         LOGGER.debug("limit is: %s", limit)
 
                         if remaining == "0" and response.status != 429:
                             assert retry is not None
-                            delta = retry - datetime.datetime.now()
+                            delta = retry - datetime.datetime.now(datetime.timezone.utc)
                             sleep = delta.total_seconds() + 1
                             LOGGER.warning("A ratelimit has been exhausted, sleeping for: %d", sleep)
                             maybe_lock.defer()
                             loop = asyncio.get_running_loop()
                             loop.call_later(sleep, lock.release)
 
-                        data = await json_or_text(response)
+                        data = await _json_or_text(response)
 
                         if 300 > response.status >= 200:
                             return data
 
                         if response.status == 429:
                             assert retry is not None
-                            delta = retry - datetime.datetime.now()
+                            delta = retry - datetime.datetime.now(datetime.timezone.utc)
                             sleep = delta.total_seconds() + 1
                             LOGGER.warning("A ratelimit has been hit, sleeping for: %d", sleep)
                             await asyncio.sleep(sleep)
@@ -227,15 +229,14 @@ class HTTPClient:
                             await asyncio.sleep(sleep_)
                             continue
 
-                        print(data)
                         assert isinstance(data, dict)
                         LOGGER.exception("Unhandled HTTP error occurred: %s -> %s", response.status, data)
                         raise APIException(
                             response=response,
                             status_code=response.status,
                         )
-                except (aiohttp.ServerDisconnectedError, aiohttp.ServerTimeoutError) as error:
-                    LOGGER.exception("Network error occurred: %s", error)
+                except (aiohttp.ServerDisconnectedError, aiohttp.ServerTimeoutError):
+                    LOGGER.exception("Network error occurred:")
                     await asyncio.sleep(5)
                     continue
 

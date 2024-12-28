@@ -130,9 +130,9 @@ class Paste:
         "id",
     )
 
-    def __init__(self, *, http: HTTPClient, id: str, created_at: str, files: Sequence[File]) -> None:
+    def __init__(self, *, http: HTTPClient, paste_id: str, created_at: str, files: Sequence[File]) -> None:
         self._http: HTTPClient = http
-        self.id: str = id
+        self.id: str = paste_id
         self.created_at: datetime.datetime = datetime.datetime.fromisoformat(created_at)
         self.files: Sequence[File] = files
 
@@ -163,7 +163,7 @@ class Paste:
         files = [File.from_data(data) for data in payload["files"]]
         self = cls(
             http=http,
-            id=payload["id"],
+            paste_id=payload["id"],
             created_at=payload["created_at"],
             files=files,
         )
@@ -183,7 +183,7 @@ class Paste:
     def from_create(cls, payload: CreatePasteResponse, files: Sequence[File], *, http: HTTPClient) -> Self:
         self = cls(
             http=http,
-            id=payload["id"],
+            paste_id=payload["id"],
             created_at=payload["created_at"],
             files=files,
         )
