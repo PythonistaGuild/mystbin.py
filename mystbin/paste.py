@@ -57,12 +57,12 @@ class File:
     """
 
     __slots__ = (
-        "filename",
-        "content",
-        "_lines_of_code",
-        "_character_count",
-        "_parent_id",
         "_annotation",
+        "_character_count",
+        "_lines_of_code",
+        "_parent_id",
+        "content",
+        "filename",
     )
 
     def __init__(self, *, filename: str, content: str) -> None:
@@ -107,7 +107,7 @@ class Paste:
     _views: int | None
     _security: str | None
 
-    """Represents a Paste object from mystb.in.
+    """Represents a Paste object from mystbin instances.
 
     Attributes
     -----------
@@ -120,14 +120,14 @@ class Paste:
     """
 
     __slots__ = (
-        "id",
+        "_expires",
+        "_http",
+        "_security",
+        "_views",
         "author_id",
         "created_at",
         "files",
-        "_security",
-        "_expires",
-        "_views",
-        "_http",
+        "id",
     )
 
     def __init__(self, *, http: HTTPClient, id: str, created_at: str, files: Sequence[File]) -> None:
@@ -144,7 +144,7 @@ class Paste:
 
     @property
     def url(self) -> str:
-        return f"https://mystb.in/{self.id}"
+        return f"{self._http.api_base}{self.id}"
 
     @property
     def expires(self) -> datetime.datetime | None:

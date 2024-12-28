@@ -107,14 +107,15 @@ class MaybeUnlock:
 
 class Route:
     __slots__ = (
-        "verb",
         "path",
         "url",
+        "verb",
     )
 
     API_BASE: ClassVar[str] = "https://mystb.in/api"
 
     def __init__(self, verb: SupportedHTTPVerb, path: str, **params: Any) -> None:
+
         self.verb: SupportedHTTPVerb = verb
         self.path: str = path
         url = self.API_BASE + path
@@ -122,23 +123,31 @@ class Route:
             url = url.format_map({k: _uriquote(v) if isinstance(v, str) else v for k, v in params.items()})
         self.url: str = url
 
-
 class HTTPClient:
     __slots__ = (
-        "_session",
-        "_owns_session",
         "_async",
-        "_token",
         "_locks",
-        "user_agent",
+        "_owns_session",
+        "_session",
+        "_token",
+        "api_base",
+        "user_agent"
     )
 
-    def __init__(self, *, session: aiohttp.ClientSession | None = None) -> None:
+    def __init__(self, *, session: aiohttp.ClientSession | None = None, api_base: str | None = None) -> None:
         self._session: aiohttp.ClientSession | None = session
         self._owns_session: bool = False
         self._locks: weakref.WeakValueDictionary[str, asyncio.Lock] = weakref.WeakValueDictionary()
         user_agent = "mystbin.py (https://github.com/PythonistaGuild/mystbin.py {0}) Python/{1[0]}.{1[1]} aiohttp/{2}"
         self.user_agent: str = user_agent.format(__version__, sys.version_info, aiohttp.__version__)
+        self._resolve_api(api_base)
+
+    def _resolve_api(self, api: str | None) -> None:
+        if api:
+            Route.API_BASE = api + "api" if api.endswith("/") else api + "/api"
+            self.api_base = api + ("/" if not api.endswith("/") else "")
+        else:
+            self.api_base = "https://mystb.in/"
 
     async def close(self) -> None:
         if self._session and self._owns_session:
