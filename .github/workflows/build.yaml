@@ -47,7 +47,7 @@ jobs:
           uv run sphinx-build -aEWT --keep-going ./ ./build
 
       - name: "Upload artifacts"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: distributions
           path: dist/*
@@ -70,7 +70,7 @@ jobs:
           submodules: true
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: distributions
           path: dist
