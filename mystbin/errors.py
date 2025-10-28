@@ -29,6 +29,8 @@ __all__ = (
 
 
 class APIException(Exception):
+    """Non-specific API error and http status code."""
+
     def __init__(self, *, response: ClientResponse, status_code: int) -> None:
         self.response = response
         self.status_code = status_code

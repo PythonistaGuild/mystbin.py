@@ -78,6 +78,8 @@ preview = true
 select = ["ALL"]
 ignore = [
     "ANN401",
+    "COM812",  # required for format
+    "D105",    # they don't need to be documented all the time
     "D400",
     "D401",
     "EM101",   # in this case this is okay
@@ -92,6 +94,7 @@ ignore = [
     "Q000",
     "RUF001",
     "RUF009",
+    "N818",    # seems overeager
     "S101",    # assert is used for type checking in this codebase
     "SIM105",
     "TRY003",  # over-eager rule

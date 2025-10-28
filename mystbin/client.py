@@ -56,10 +56,10 @@ class Client:
     def __init__(self, *, session: ClientSession | None = None, root_url: str = "https://mystb.in") -> None:
         self.http: HTTPClient = HTTPClient(session=session, root_url=root_url)
 
-    async def __aenter__(self) -> Self:  # noqa: D105
+    async def __aenter__(self) -> Self:
         return self
 
-    async def __aexit__(  # noqa: D105
+    async def __aexit__(
         self,
         exc_cls: type[BaseException] | None,
         exc_value: BaseException | None,

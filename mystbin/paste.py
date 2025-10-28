@@ -44,7 +44,7 @@ class File:
     """Represents a single file within a mystb.in paste.
 
     Attributes
-    -----------
+    ----------
     filename: :class:`str`
         The file's name.
     content: :class:`str`
@@ -74,7 +74,7 @@ class File:
         """The total lines of code this file has.
 
         Returns
-        --------
+        -------
         :class:`int`
         """
         return self._lines_of_code
@@ -84,7 +84,7 @@ class File:
         """The total character count of this file.
 
         Returns
-        --------
+        -------
         :class:`int`
         """
         return self._character_count
@@ -94,7 +94,7 @@ class File:
         """The files annotation.
 
         Returns
-        --------
+        -------
         :class:`str`
         """
         return self._annotation
@@ -104,13 +104,19 @@ class File:
         """The files parent paste ID.
 
         Returns
-        --------
+        -------
         :class:`str`
         """
         return self._parent_id
 
     @classmethod
     def from_data(cls, payload: FileResponse, /) -> Self:
+        """Method to create a File from an api response.
+
+        Returns
+        -------
+        :class:`~mystbin.File`
+        """
         self = cls(
             content=payload["content"],
             filename=payload["filename"],
@@ -123,6 +129,12 @@ class File:
         return self
 
     def to_dict(self) -> dict[str, Any]:
+        """Method to dump the File data to a serialized api payload.
+
+        Returns
+        -------
+        :class:`dict[:class:`str`, Any]`
+        """
         return {"content": self.content, "filename": self.filename}
 
 
@@ -130,7 +142,7 @@ class Paste:
     """Represents a Paste object from mystbin instances.
 
     Attributes
-    -----------
+    ----------
     id: :class:`str`
         The ID of this paste.
     created_at: :class:`datetime.datetime`
@@ -171,7 +183,7 @@ class Paste:
         """The paste URL.
 
         Returns
-        --------
+        -------
         :class:`str`
         """
         return f"{self._http.root_url}{self.id}"
@@ -181,7 +193,7 @@ class Paste:
         """When the paste expires, if at all.
 
         Returns
-        --------
+        -------
         Optional[:class:`datetime.datetime`]
         """
         return self._expires
@@ -191,7 +203,7 @@ class Paste:
         """The pastes view count, if any.
 
         Returns
-        --------
+        -------
         Optional[:class:`int`]
         """
         return self._views
@@ -201,13 +213,19 @@ class Paste:
         """The pastes security token, if any.
 
         Returns
-        --------
+        -------
         Optional[:class:`str`]
         """
         return self._security
 
     @classmethod
     def from_get(cls, payload: GetPasteResponse, /, *, http: HTTPClient) -> Self:
+        """Method to create a Paste from the api fetch response.
+
+        Returns
+        -------
+        :class:`~mystbin.Paste`
+        """
         files = [File.from_data(data) for data in payload["files"]]
         self = cls(
             http=http,
@@ -229,6 +247,12 @@ class Paste:
 
     @classmethod
     def from_create(cls, payload: CreatePasteResponse, files: Sequence[File], *, http: HTTPClient) -> Self:
+        """Method to create a Paste from the api response.
+
+        Returns
+        -------
+        :class:`~mystbin.Paste`
+        """
         self = cls(
             http=http,
             paste_id=payload["id"],
@@ -253,7 +277,7 @@ class Paste:
         This method will delete this paste from the mystbin instance.
 
         Raises
-        -------
+        ------
         ValueError
             The paste requires the security token to be present.
         """
