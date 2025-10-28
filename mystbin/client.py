@@ -42,7 +42,7 @@ class Client:
     The main client class that interacts with the mystb.in API.
 
     Parameters
-    -----------
+    ----------
     session: Optional[:class:`aiohttp.ClientSession`]
         The session to use for the HTTP requests.
         If not provided, a new session will be created.
@@ -56,10 +56,10 @@ class Client:
     def __init__(self, *, session: ClientSession | None = None, root_url: str = "https://mystb.in") -> None:
         self.http: HTTPClient = HTTPClient(session=session, root_url=root_url)
 
-    async def __aenter__(self) -> Self:
+    async def __aenter__(self) -> Self:  # noqa: D105
         return self
 
-    async def __aexit__(
+    async def __aexit__(  # noqa: D105
         self,
         exc_cls: type[BaseException] | None,
         exc_value: BaseException | None,
@@ -86,7 +86,7 @@ class Client:
         Create a single file paste on mystb.in.
 
         Parameters
-        -----------
+        ----------
         files: List[:class:`~mystbin.File`]
             The pre-creates list of files you wish to upload.
         password: Optional[:class:`str`]
@@ -95,7 +95,7 @@ class Client:
             When the paste expires, if any.
 
         Returns
-        --------
+        -------
         :class:`mystbin.Paste`
             The paste that was created.
         """
@@ -108,7 +108,7 @@ class Client:
         Delete a paste.
 
         Parameters
-        -----------
+        ----------
         security_token: :class:`str`
             The security token relating to the paste to delete.
         """
@@ -129,7 +129,7 @@ class Client:
         Fetch a paste.
 
         Parameters
-        -----------
+        ----------
         paste_id: :class:`str`
             The paste id to fetch.
         password: Optional[:class:`str`]
@@ -139,7 +139,7 @@ class Client:
             Defaults to ``False``.
 
         Returns
-        --------
+        -------
         Union[:class:`~mystbin.Paste`, List[:class:`str`]]
             The paste data returned.
         """

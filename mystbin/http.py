@@ -18,7 +18,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
-"""  # noqa: A005 # we access this via namespace
+"""
 
 from __future__ import annotations
 
@@ -40,6 +40,7 @@ from typing import (
 from urllib.parse import quote as _uriquote
 
 import aiohttp
+from typing_extensions import Self
 
 from . import __version__
 from .errors import APIException
@@ -52,14 +53,14 @@ if TYPE_CHECKING:
     T = TypeVar("T")
     Response = Coroutine[None, None, T]
     MU = TypeVar("MU", bound="MaybeUnlock")
-    from .types.responses import CreatePasteResponse, GetPasteResponse
+    from .types_.responses import CreatePasteResponse, GetPasteResponse
 
 
 SupportedHTTPVerb = Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
-__all__ = ("HTTPClient",)
+__all__ = ()
 
 
 def _clean_dt(dt: datetime.datetime) -> str:
@@ -72,7 +73,7 @@ async def _json_or_text(response: aiohttp.ClientResponse, /) -> dict[str, Any] |
     """A quick method to parse a `aiohttp.ClientResponse` and test if it's json or text.
 
     Returns
-    --------
+    -------
     Union[Dict[:class:`str`, Any], :class:`str`]
         The JSON object, or request text.
     """
@@ -94,7 +95,7 @@ class MaybeUnlock:
         self.lock: asyncio.Lock = lock
         self._unlock: bool = True
 
-    def __enter__(self: MU) -> MU:
+    def __enter__(self) -> Self:
         return self
 
     def defer(self) -> None:
@@ -162,7 +163,7 @@ class HTTPClient:
         self._owns_session = True
         return self._session
 
-    async def request(self, route: Route, **kwargs: Any) -> Any:
+    async def request(self, route: Route, **kwargs: Any) -> Any:  # noqa: C901, PLR0915
         if self._session is None:
             self._session = await self._generate_session()
 
@@ -178,7 +179,7 @@ class HTTPClient:
         if "json" in kwargs:
             headers["Content-Type"] = "application/json"
             kwargs["data"] = json.dumps(kwargs.pop("json"), separators=(",", ":"), ensure_ascii=True)
-            LOGGER.debug("Current json body is: %s", str(kwargs["data"]))
+            LOGGER.debug("Current json body is: %s", kwargs["data"])
 
         kwargs["headers"] = headers
 
@@ -232,7 +233,7 @@ class HTTPClient:
                             continue
 
                         assert isinstance(data, dict)
-                        LOGGER.exception("Unhandled HTTP error occurred: %s -> %s", response.status, data)
+                        LOGGER.error("Unhandled HTTP error occurred: %s -> %s", response.status, data)
                         raise APIException(
                             response=response,
                             status_code=response.status,

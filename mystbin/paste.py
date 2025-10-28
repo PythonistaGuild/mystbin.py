@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from .http import HTTPClient
-    from .types.responses import CreatePasteResponse, FileResponse, GetPasteResponse
+    from .types_.responses import CreatePasteResponse, FileResponse, GetPasteResponse
 
 
 __all__ = (

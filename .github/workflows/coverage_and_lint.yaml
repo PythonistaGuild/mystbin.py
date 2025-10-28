@@ -10,46 +10,44 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  job:
+  check:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.8', '3.x' ]
+        python-version: ["3.11", "3.x"]
 
     name: "Type Coverage and Linting @ ${{ matrix.python-version }}"
     steps:
       - name: "Checkout Repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Setup PDM @ ${{ matrix.python-version }}
-        uses: pdm-project/setup-pdm@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: ${{ matrix.python-version }}
-          cache: true
+          enable-cache: true
+          activate-environment: true
 
       - name: Install deps @ ${{ matrix.python-version }}
         run: |
-          pdm install --check --no-editable
-
-      - name: Activate venv @ ${{ matrix.python-version }}
-        run: |
-          echo "$(pdm info --where)/.venv/bin" >> $GITHUB_PATH
+          uv sync --locked --all-extras --all-groups
 
       - name: "Run Pyright @ ${{ matrix.python-version }}"
         uses: jakebailey/pyright-action@v2
         with:
           warnings: false
-          annotate: "${{ matrix.python-version != '3.x' }}"
+          verify-types: "mystbin"
+          ignore-external: true
+          annotate: ${{ matrix.python-version != '3.x' && 'all' || 'none' }}
 
-      - name: Lint check
-        uses: astral-sh/ruff-action@v3
+      - uses: astral-sh/ruff-action@v3
         with:
-          args: check .
+          version-file: "pyproject.toml"
 
-      - name: Formatting check
-        uses: chartboost/ruff-action@v1
-        with:
-          args: format --check
+      - name: Lint
+        run: ruff check .
+
+      - name: Format check
+        run: ruff format --check .

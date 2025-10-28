@@ -1,6 +1,5 @@
 [project]
 name = "mystbin-py"
-version = "7.1.1"
 description = "A small simple wrapper around the mystb.in API."
 authors = [{ name = "Alex Nørgaard", email = "umbra@abstractumbra.dev" }]
 dependencies = [
@@ -24,6 +23,7 @@ classifiers = [
     "Topic :: Internet",
     "Typing :: Typed",
 ]
+dynamic = ["version"]
 
 [project.urls]
 "Issue Tracker" = "https://github.com/PythonistaGuild/mystbin.py/issues"
@@ -38,18 +38,36 @@ speedups = ["aiohttp[speedups]<4.0,>=3.8"]
 docs = ["sphinx", "sphinxcontrib-trio", "furo"]
 dev = ["ruff", "typing-extensions"]
 
-[tool.pdm]
-distribution = true
-
-[tool.pdm.build]
-includes = ["mystbin", "mystbin/**/*.py", "mystbin/py.typed", "LICENSE"]
-
-[tool.pdm.scripts]
-docs = "sphinx-build -aEWT --keep-going docs/ docs/build" # TODO: add -n when sphinx is fixed
+[tool.uv]
+package = true
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# direct dependency references, e.g `pip @ git+https://github.com/pypa/pip.git@master`
+allow-direct-references = true
+
+[tool.hatch.version]
+path = "mystbin/__init__.py"
+
+[tool.hatch.build]
+dev-mode-dirs = ["."]
+ignore-vcs = true
+
+[tool.hatch.build.targets.sdist]
+exclude = ["docs", ".github"]
+include = ["mystbin/*", "LICENSE"]
+skip-excluded-dirs = false
+
+[tool.hatch.build.targets.wheel]
+packages = ["./mystbin"]
+
+[[tool.uv.index]]
+name = "umbra"
+url = "https://about.abstractumbra.dev/pip/"
+explicit = true
 
 [tool.ruff]
 line-length = 125
@@ -57,54 +75,11 @@ target-version = "py38"
 
 [tool.ruff.lint]
 preview = true
-select = [
-    "A",
-    "ANN",
-    "ASYNC",
-    "B",
-    "BLE",
-    "C4",
-    "COM",
-    "DTZ",
-    "E",
-    "EM",
-    "ERA",
-    "F",
-    "FA",
-    "FBT",
-    "FURB",
-    "G",
-    "I",
-    "INP",
-    "ISC",
-    "NPY",
-    "PD",
-    "PERF",
-    "PGH",
-    "PIE",
-    "PLC",
-    "PLE",
-    "PLW",
-    "PTH",
-    "PYI",
-    "Q",
-    "Q003",
-    "RET",
-    "RSE",
-    "RUF",
-    "S",
-    "SIM",
-    "SLOT",
-    "T20",
-    "TC",
-    "TID",
-    "TRY",
-    "UP",
-    "YTT",
-    "DOC",
-]
+select = ["ALL"]
 ignore = [
     "ANN401",
+    "D400",
+    "D401",
     "EM101",   # in this case this is okay
     "F401",
     "F402",
@@ -113,6 +88,7 @@ ignore = [
     "PD011",   # this is not a numpy codebase
     "PERF203",
     "PLC0414", # pyright ruling for `as` imports needed
+    "PLR2004",
     "Q000",
     "RUF001",
     "RUF009",
@@ -121,7 +97,6 @@ ignore = [
     "TRY003",  # over-eager rule
     "TRY301",  # unrealistic rule
     "UP034",
-    "UP038",
 ]
 unfixable = [
     "E501", # line length handled in other ways by ruff format
@@ -130,13 +105,9 @@ unfixable = [
 exclude = ["docs/conf.py"]
 
 [tool.ruff.format]
-# Like Black, use double quotes for strings.
 quote-style = "double"
-# Like Black, indent with spaces, rather than tabs.
 indent-style = "space"
-# Like Black, respect magic trailing commas.
 skip-magic-trailing-comma = false
-# Like Black, automatically detect the appropriate line ending.
 line-ending = "auto"
 
 [tool.ruff.lint.isort]
