@@ -130,6 +130,8 @@ class Route:
 
 
 class HTTPClient:
+    root_url: str
+
     __slots__ = (
         "_locks",
         "_owns_session",
