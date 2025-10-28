@@ -20,4 +20,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 """
 
-from mystbin.types_ import responses as responses
+from mystbin.types_ import responses
+
+__all__ = ("responses",)

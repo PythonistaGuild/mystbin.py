@@ -24,21 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 __version__ = "7.1.1"
 
-from typing import Literal, NamedTuple
 
 from .client import Client as Client
 from .errors import *
 from .paste import File as File, Paste as Paste
-
-
-class VersionInfo(NamedTuple):
-    major: int
-    minor: int
-    micro: int
-    releaselevel: Literal["alpha", "beta", "candidate", "final"]
-    serial: int
-
-
-version_info: VersionInfo = VersionInfo(major=7, minor=1, micro=1, releaselevel="final", serial=0)
-
-del NamedTuple, Literal, VersionInfo
