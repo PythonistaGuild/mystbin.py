@@ -17,6 +17,10 @@ A small simple wrapper around the [Mystb.in](https://mystb.in/) API. API docs ca
 Documentation for this wrapper can be found [here](https://mystbinpy.readthedocs.io/en/stable/).
 If you want the docs for the `main` branch, those can be found [here](https://mystbinpy.readthedocs.io/en/latest/).
 
+## Archival
+
+Mystbin has been deprecated in favour of [pastey.gg](https://pastey.gg)! As such this tool will be archived but left in existence in the event someone wants to self-host Mystbin and use this tool with it.
+
 ----------
 ### Features
 
